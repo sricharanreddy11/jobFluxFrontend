@@ -1,4 +1,4 @@
-import { NgClass, NgIf } from '@angular/common';
+import { NgClass, NgFor, NgIf } from '@angular/common';
 import { Component, EventEmitter, Output } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { CommandSearchService } from '../command-search/command-search.service';
