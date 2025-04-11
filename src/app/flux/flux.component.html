@@ -1,1 +1,7 @@
-<p>flux works!</p>
+<div class="flex h-screen dark:bg-gray-900 dark:text-gray-200">
+    <app-navbar (logout)="onLogout()" (toggle)="onToggleView()"></app-navbar>
+    <div class="flex-grow transition-all duration-300" [ngClass]="{ 'ml-24': isSidebarToggled, 'ml-72': !isSidebarToggled }">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+  <app-command-search></app-command-search>

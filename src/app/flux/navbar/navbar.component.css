@@ -1,0 +1,19 @@
+.transition-width {
+    transition-property: width;
+}
+
+.bg-white {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 0.5rem;
+}
+
+.active-nav {
+    border-color: #6366f1;  /* border-indigo-500 */
+    background-color: #eef2ff;  /* bg-indigo-50 */
+    color: #4f46e5;  /* text-indigo-600 */
+  }
+  
+  .dark .active-nav {
+    background-color: #4338ca;  /* dark:bg-indigo-700 */
+    color: #e0e7ff;  /* dark:text-indigo-200 */
+  }
