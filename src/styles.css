@@ -1,3 +1,16 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+    --color-primary: #ff7f50;      /* Coral - Used for brand and actions */
+    --color-primary-hover: #ff5714; /* Darker coral for hover states */
+    --color-secondary: #168aad;    /* Teal blue - Used for icons and accents */
+    --color-bg-main: #fdf6ec;      /* Cream - Main background */
+    --color-bg-sidebar: #fef9f3;   /* Lighter cream - Sidebar background */
+    --color-bg-hover: #fef1e6;     /* Light peach - Hover background */
+    --color-bg-active: #eaf4f4;    /* Light teal - Active state background */
+    --color-border: #e0c9a6;       /* Tan - Border color */
+    --color-text: #4b4b4b;         /* Dark gray - Main text */
+    --color-category: #a87c55;     /* Brown - Category text */
+  }

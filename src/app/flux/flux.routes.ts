@@ -1,4 +1,7 @@
 import { Routes } from '@angular/router';
+import { NoteMakerComponent } from './note-maker/note-maker.component';
+import { OutreachComponent } from './outreach/outreach.component';
+import {routes as outreachRoutes} from './outreach/outreach.routes';
 
 export const routes: Routes = [
     {
@@ -22,14 +25,15 @@ export const routes: Routes = [
     //     path: 'projects/:id',
     //      component: ProjectComponent
     // },
-    // {
-    //     path: 'alerts',
-    //     component: AlertsComponent,
-    // },
-    // {
-    //     path: 'note-maker',
-    //     component: NoteMakerComponent,
-    // },
+    {
+        path: 'outreach',
+        component: OutreachComponent,
+        children: outreachRoutes,
+    },
+    {
+        path: 'note-maker',
+        component: NoteMakerComponent,
+    },
     // {
     //     path: 'assistant',
     //     component: AssistantComponent,

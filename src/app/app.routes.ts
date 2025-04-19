@@ -5,6 +5,7 @@ import { AuthenticatorComponent } from './authenticator/authenticator.component'
 import { AuthGuard } from './authenticator/authenticator.guard';
 import { AppGuard } from './app.guard';
 import { FluxComponent } from './flux/flux.component';
+import { routes as fluxRoutes } from './flux/flux.routes';
 
 
 export const routes: Routes = [
@@ -22,7 +23,7 @@ export const routes: Routes = [
     {
         path: 'flux',
         component: FluxComponent,
-        // children: ,
+        children: fluxRoutes,
         canActivate: [AppGuard]
     },
     { 
