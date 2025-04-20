@@ -23,6 +23,17 @@ export class OutreachService {
     }
     return this.http.get<any>(`${this.apiUrl}notification/token/`, { params });
   }
+
+  disconnectMailToken(data: any, paramsObj?: { [key: string]: any }): Observable<any> {
+    let params = new HttpParams();
+
+    if (paramsObj) {
+        Object.keys(paramsObj).forEach(key => {
+            params = params.set(key, paramsObj[key]);
+        });
+    }
+    return this.http.patch<any>(`${this.apiUrl}notification/token/disconnect/`,data, { params });
+  }
   
   getAuthorizeUrl(paramsObj?: { [key: string]: any }): Observable<any> {
     let params = new HttpParams();
@@ -47,12 +58,24 @@ postAuthorizeMail(mailData: any, paramsObj?: { [key: string]: any }): Observable
     return this.http.post(`${this.apiUrl}notification/mail/authorize/`, mailData, { params });
 }
 
-getMailThreads(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/notification/mail-thread`);
-  }
+    getMailThreads(paramsObj?: { [key: string]: any }): Observable<any[]> {
+        let params = new HttpParams();
+        if (paramsObj) {
+            Object.keys(paramsObj).forEach(key => {
+                params = params.set(key, paramsObj[key]);
+            });
+        }
+        return this.http.get<any[]>(`${this.apiUrl}notification/mail-thread/`, { params });
+    }
   
-  getMails(threadId: string): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/mail-box/email`);
-  }
-  
+    getMails(paramsObj?: { [key: string]: any }): Observable<any[]> {
+        let params = new HttpParams();
+        if (paramsObj) {
+            Object.keys(paramsObj).forEach(key => {
+                params = params.set(key, paramsObj[key]);
+            });
+        }
+        return this.http.get<any[]>(`${this.apiUrl}notification/mail-thread/detail/`, {params});
+    }
+
 }

@@ -16,9 +16,11 @@ export class MailBoxComponent {
   mailBoxData: any;
   isLoading: boolean = false;
   public code: string | undefined;
-  selectedFilter: string = 'inbox';
+  selectedFilter: string = 'sent';
   showComposeModal: boolean = false;
   isMailboxConnected: boolean = false;
+  threadOwner: string = '';
+
   providers = [
     { id: 'google_mail', name: 'Gmail', icon: 'https://img.icons8.com/?size=100&id=P7UIlhbpWzZm&format=png&color=000000', description: 'Connect with your Google account' },
     { id: 'other_mail', name: 'Other Email', icon: 'https://img.icons8.com/?size=100&id=53388&format=png&color=000000', description: 'Connect any other email provider' },
@@ -26,8 +28,8 @@ export class MailBoxComponent {
   showOtherMailModal = false;
   
   mailFilters = [
-    { id: 'inbox', name: 'Inbox', icon: 'inbox' },
     { id: 'sent', name: 'Sent', icon: 'paper-plane' },
+    { id: 'inbox', name: 'Inbox', icon: 'inbox' },
     { id: 'trash', name: 'Trash', icon: 'trash' }
   ];
   
@@ -77,7 +79,6 @@ export class MailBoxComponent {
 
   public loadMailIntegrations() {
     this.checkMailboxConnection();
-    this.mailBoxData = this.outreachService.mailBoxData;
   }
   
   selectFilter(filter: string) {
@@ -100,6 +101,7 @@ export class MailBoxComponent {
         if (res && res.length > 0) {
           this.isMailboxConnected = true;
           this.mailBoxData = res[0];
+          this.threadOwner = this.mailBoxData.email;
         } else {
           this.isMailboxConnected = false;
         }
@@ -145,6 +147,16 @@ export class MailBoxComponent {
   }
 
   disconnectMailbox(): void {
-    console.log('Disconnecting mailbox...');
+    const data = {
+      "token_id": this.mailBoxData.id,
+      "status": "DISCONNECTED"
+    };
+    this.outreachService.disconnectMailToken(data).subscribe(
+      (res) => {
+        console.log('Mailbox disconnected:', res);
+        this.isMailboxConnected = false;
+        this.mailBoxData = {};
+      }
+    );  
   }
 }

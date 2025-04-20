@@ -1,0 +1,18 @@
+  .mail-thread-item {
+    transition: background-color 0.2s ease;
+  }
+  
+  .mail-thread-item:last-child {
+    border-bottom: none;
+  }
+  
+  /* Animation for new messages */
+  @keyframes pulse {
+    0% { opacity: 0.6; }
+    50% { opacity: 1; }
+    100% { opacity: 0.6; }
+  }
+  
+  .mail-thread-item.unread {
+    animation: pulse 2s infinite;
+  }
