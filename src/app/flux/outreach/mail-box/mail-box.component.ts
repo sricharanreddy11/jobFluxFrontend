@@ -1,107 +1,150 @@
 import { Component } from '@angular/core';
 import { OutreachService } from '../outreach.service';
-import { DatePipe, NgFor, NgIf } from '@angular/common';
+import { DatePipe, NgFor, NgIf, TitleCasePipe } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-
-interface MailThread {
-  id: string;
-  subject: string;
-  participants: string[];
-  preview: string;
-  unread: boolean;
-  lastMessageDate: Date;
-  messageCount: number;
-}
-
-interface Mail {
-  id: string;
-  threadId: string;
-  from: string;
-  to: string[];
-  cc: string[];
-  subject: string;
-  content: string;
-  date: Date;
-  attachments: any[];
-}
+import { FormsModule } from '@angular/forms';
+import { MailThreadComponent } from './mail-thread/mail-thread.component';
+import { OtherMailFormComponent } from "../other-mail-form/other-mail-form.component";
 
 @Component({
   selector: 'app-mail-box',
   standalone: true,
-  imports: [DatePipe, NgFor, NgIf],
-  templateUrl: './mail-box.component.html',
-  styleUrl: './mail-box.component.css'
+  imports: [NgFor, NgIf, FormsModule, MailThreadComponent, OtherMailFormComponent],
+  templateUrl: './mail-box.component.html'
 })
 export class MailBoxComponent {
-  threads: MailThread[] = [];
-  selectedThread: MailThread | null = null;
-  mails: Mail[] = [];
+  mailBoxData: any;
   isLoading: boolean = false;
-  public code:string | undefined;
-
+  public code: string | undefined;
+  selectedFilter: string = 'inbox';
+  showComposeModal: boolean = false;
+  isMailboxConnected: boolean = false;
+  providers = [
+    { id: 'google_mail', name: 'Gmail', icon: 'https://img.icons8.com/?size=100&id=P7UIlhbpWzZm&format=png&color=000000', description: 'Connect with your Google account' },
+    { id: 'other_mail', name: 'Other Email', icon: 'https://img.icons8.com/?size=100&id=53388&format=png&color=000000', description: 'Connect any other email provider' },
+  ];
+  showOtherMailModal = false;
   
-  constructor(private outreachService: OutreachService,
-     private activatedRoute:ActivatedRoute,
-     private router:Router,
+  mailFilters = [
+    { id: 'inbox', name: 'Inbox', icon: 'inbox' },
+    { id: 'sent', name: 'Sent', icon: 'paper-plane' },
+    { id: 'trash', name: 'Trash', icon: 'trash' }
+  ];
+  
+  constructor(
+    private outreachService: OutreachService,
+    private activatedRoute: ActivatedRoute,
+    private router: Router,
   ) {
-    this.activatedRoute.queryParams.subscribe(params =>{
+    this.activatedRoute.queryParams.subscribe(params => {
       this.code = params['code'];
-    })
+    });
   }
   
   ngOnInit(): void {
     console.log('MailBoxComponent', this.outreachService.mailBoxData);
   }
 
-  ngAfterViewInit(){
-    setTimeout(()=>{
-      if(this.code){
+  ngAfterViewInit() {
+    setTimeout(() => {
+      if (this.code) {
         this.authorizeWIthCode();
-      }
-      else{
+      } else {
         this.loadMailIntegrations();
       }
-      
-    },10)  
+    }, 10);
   }
 
-  public authorizeWIthCode(){
-    if(this.code){
-      let body:any = {}
+  public authorizeWIthCode() {
+    if(this.code) {
+      let body: any = {};
       body.authorization_code = this.code;
       const provider = localStorage.getItem('provider') || '';
       const params = {
-        "provider": provider};
-      this.outreachService.postAuthorizeMail(body, params).subscribe(res =>{
-        localStorage.removeItem('provider');
-      },
-      error=>{
-        
-      }
-      )
+        "provider": provider
+      };
+      this.outreachService.postAuthorizeMail(body, params).subscribe(
+        res => {
+          localStorage.removeItem('provider');
+          this.loadMailIntegrations();
+        },
+        error => {
+          console.error('Authorization error:', error);
+        }
+      );
     }
   }
 
-  public loadMailIntegrations(){
+  public loadMailIntegrations() {
+    this.checkMailboxConnection();
+    this.mailBoxData = this.outreachService.mailBoxData;
+  }
+  
+  selectFilter(filter: string) {
+    this.selectedFilter = filter;
+  }
+  
+  toggleComposeModal() {
+    this.showComposeModal = !this.showComposeModal;
+  }
+  
+  sendMail(mailData: any) {
+    console.log('Sending mail:', mailData);
+    this.showComposeModal = false;
+  }
 
-  }
-  
-  selectThread(thread: MailThread): void {
-    this.selectedThread = thread;
-    this.loadMailsForThread(thread.id);
-  }
-  
-  loadMailsForThread(threadId: string): void {
-    this.isLoading = true;
-    this.outreachService.getMails(threadId).subscribe(
-      mails => {
-        this.mails = mails;
-        this.isLoading = false;
+  checkMailboxConnection(): void {
+    const paramsObj = {"status": "ACTIVE"}
+    this.outreachService.getMailToken(paramsObj).subscribe(
+      (res) => {
+        if (res && res.length > 0) {
+          this.isMailboxConnected = true;
+          this.mailBoxData = res[0];
+        } else {
+          this.isMailboxConnected = false;
+        }
       },
       error => {
-        console.error('Error loading mails for thread:', error);
-        this.isLoading = false;
+        console.error('Error checking mailbox connection:', error);
+        this.isMailboxConnected = false;
       }
     );
+  }
+
+  connectProvider(providerId: string): void {
+    if (providerId === 'other_mail') {
+      this.showOtherMailModal = true;
+    }
+    else{
+      const paramsObj = {"provider": providerId}
+      this.outreachService.getAuthorizeUrl(paramsObj).subscribe(
+        response => {
+          localStorage.setItem('provider', providerId);
+          window.location.href = response.redirect_url;
+        },
+        error => {
+          console.error('Error getting auth URL:', error);
+        }
+      );
+    }
+  }
+
+  closeOtherMailModal(): void {
+    this.showOtherMailModal = false;
+  }
+
+  handleOtherMailSubmit(formData: any): void {
+    this.showOtherMailModal = false;
+    const queryParams = new URLSearchParams(formData).toString();
+    this.router.navigate(['/mail-box'], { queryParams: formData });
+  }
+
+  getProviderIcon(providerId: string): string | null {
+    const match = this.providers.find(p => p.id === providerId);
+    return match?.icon || null;
+  }
+
+  disconnectMailbox(): void {
+    console.log('Disconnecting mailbox...');
   }
 }
