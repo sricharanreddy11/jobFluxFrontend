@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { OutreachService } from '../../outreach.service';
 import { CommonModule, DatePipe, NgFor, NgIf } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -13,6 +13,8 @@ import { RouterModule } from '@angular/router';
 export class MailThreadComponent {
   @Input() filter: string = 'sent';
   @Input() thread_owner: string = '';
+
+  @Output() selectedThreadId = new EventEmitter<string>();
 
   public mailThreads: any[] = []
 
@@ -41,6 +43,10 @@ export class MailThreadComponent {
     );
   }
 
+  public selectThread(threadId: string): void {
+    this.selectedThreadId.emit(threadId);
+  }
+
   public moveToTrash(thread: any) {
     // // Prevent navigation when clicking the trash button
     // event?.stopPropagation();
@@ -56,6 +62,28 @@ export class MailThreadComponent {
     //     console.error('Error moving thread to trash:', error);
     //   }
     // );
+  }
+
+  getBodyPreview(htmlBody: string): string {
+    // Simple HTML stripping for preview
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = htmlBody;
+    const textContent = tempDiv.textContent || tempDiv.innerText || '';
+    return textContent.trim().substring(0, 100) + (textContent.length > 100 ? '...' : '');
+  }
+  
+  /**
+   * Formats recipients for display
+   */
+  formatRecipients(recipients: string[]): string {
+    if (!recipients || recipients.length === 0) return '';
+    
+    if (recipients.length === 1) {
+      return recipients[0];
+    }
+    
+    // Show first recipient and count of others
+    return `${recipients[0]} (+${recipients.length - 1} others)`;
   }
 
 }

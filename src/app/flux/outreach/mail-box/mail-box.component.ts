@@ -5,21 +5,25 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MailThreadComponent } from './mail-thread/mail-thread.component';
 import { OtherMailFormComponent } from "../other-mail-form/other-mail-form.component";
+import { LoadingSpinnerComponent } from "../../../shared/loading-spinner/loading-spinner.component";
+import { MailThreadDetailComponent } from "./mail-thread-detail/mail-thread-detail.component";
 
 @Component({
   selector: 'app-mail-box',
   standalone: true,
-  imports: [NgFor, NgIf, FormsModule, MailThreadComponent, OtherMailFormComponent],
+  imports: [NgFor, NgIf, FormsModule, MailThreadComponent, OtherMailFormComponent, LoadingSpinnerComponent, MailThreadDetailComponent],
   templateUrl: './mail-box.component.html'
 })
 export class MailBoxComponent {
   mailBoxData: any;
-  isLoading: boolean = false;
+  isLoading: boolean = true;
   public code: string | undefined;
   selectedFilter: string = 'sent';
   showComposeModal: boolean = false;
   isMailboxConnected: boolean = false;
   threadOwner: string = '';
+
+  selectedThreadId: string | undefined;
 
   providers = [
     { id: 'google_mail', name: 'Gmail', icon: 'https://img.icons8.com/?size=100&id=P7UIlhbpWzZm&format=png&color=000000', description: 'Connect with your Google account' },
@@ -79,6 +83,7 @@ export class MailBoxComponent {
 
   public loadMailIntegrations() {
     this.checkMailboxConnection();
+    this.isLoading = false;
   }
   
   selectFilter(filter: string) {
@@ -144,6 +149,15 @@ export class MailBoxComponent {
   getProviderIcon(providerId: string): string | null {
     const match = this.providers.find(p => p.id === providerId);
     return match?.icon || null;
+  }
+
+  handleThreadSelected(threadID: any): void {
+    console.log('Selected Thread:', threadID);
+    this.selectedThreadId = threadID;
+  }
+
+  clearSelectedThread(): void {
+    this.selectedThreadId = undefined;
   }
 
   disconnectMailbox(): void {
