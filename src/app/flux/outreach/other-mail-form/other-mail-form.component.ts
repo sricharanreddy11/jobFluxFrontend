@@ -20,10 +20,10 @@ export class OtherMailFormComponent {
       email: ['', [Validators.required, Validators.email]],
       username: ['', Validators.required],
       password: ['', Validators.required],
-      imapServer: ['', Validators.required],
-      imapServerPort: ['993', [Validators.required, Validators.pattern('^[0-9]+$')]],
-      smtpServer: ['', Validators.required],
-      smtpServerPort: ['587', [Validators.required, Validators.pattern('^[0-9]+$')]]
+      imapserver: ['', Validators.required],
+      imapserverport: ['993', [Validators.required, Validators.pattern('^[0-9]+$')]],
+      smtpserver: ['', Validators.required],
+      smtpserverport: ['587', [Validators.required, Validators.pattern('^[0-9]+$')]]
     });
   }
   

@@ -3,6 +3,7 @@ import { environment } from "../../environments/environment.development";
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { Note } from "./note-maker/note.model";
+import { Company } from "./organisations/organisations.models";
 
 @Injectable({
     providedIn: "root" 
@@ -41,20 +42,38 @@ export class FLuxAPIService{
         return this.httpClient.get(this.apiUrl + 'track/tasks/alerts/');
     }
 
-    getProjectList(): Observable<any>{
-        return this.httpClient.get(this.apiUrl + 'track/projects/');
+    getOrganisations(paramsObj?: { [key: string]: any }): Observable<Company[]> {
+        let params = new HttpParams();
+
+        if (paramsObj) {
+            Object.keys(paramsObj).forEach(key => {
+                params = params.set(key, paramsObj[key]);
+            });
+        }
+        return this.httpClient.get<Company[]>(this.apiUrl + 'flux/companies/', { params });
     }
     
-    getProjectDetail(id: string): Observable<any>{
-        return this.httpClient.get(this.apiUrl + 'track/projects/' + id + '/');
+    getOrganisationDetail(id: string): Observable<any>{
+        return this.httpClient.get(this.apiUrl + 'flux/companies/' + id + '/');
     }
 
-    createProject(formData: any) {
-        return this.httpClient.post(this.apiUrl + 'track/projects/',formData);
+    createOrganisation(formData: any) {
+        return this.httpClient.post(this.apiUrl + 'flux/companies/',formData);
     }
 
-    getAllNotes(): Observable<Note[]>{
-        return this.httpClient.get<Note[]>(this.apiUrl + 'flux/notes/');
+    updateOrganisation(formData: any, organisation_id: string) {
+        return this.httpClient.put(this.apiUrl + 'flux/companies/' + organisation_id + '/',formData);
+    }
+
+    getAllNotes(paramsObj?: { [key: string]: any }): Observable<Note[]> {
+        let params = new HttpParams();
+
+        if (paramsObj) {
+            Object.keys(paramsObj).forEach(key => {
+                params = params.set(key, paramsObj[key]);
+            });
+        }
+        return this.httpClient.get<Note[]>(this.apiUrl + 'flux/notes/', { params });
     }
 
     createNote(postData: any): Observable<Note>{

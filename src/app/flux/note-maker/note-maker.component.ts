@@ -1,32 +1,65 @@
 import { DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
 import { Component, HostListener, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Note } from './note.model';
 import { NoteService } from './note.service';
 import { FLuxAPIService } from '../flux.service';
+import { map, debounceTime, distinctUntilChanged, startWith, tap, switchMap } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 
 @Component({
   selector: 'app-note-maker',
   standalone: true,
-  imports: [FormsModule, NgFor, NgIf, NgClass, DatePipe],
+  imports: [FormsModule, NgFor, NgIf, NgClass, DatePipe, ReactiveFormsModule],
   templateUrl: './note-maker.component.html',
   styleUrl: './note-maker.component.css',
 })
 export class NoteMakerComponent implements OnInit {
 
-  constructor(private fluxAPIService: FLuxAPIService, public noteService: NoteService) {}
-
   showDeleteConfirmation = false;
   isShareMenuOpen = false;
+  isLoading = false;
+  searchParam = new FormControl('');
 
-  ngOnInit(): void {
-    this.fluxAPIService.getAllNotes().subscribe(
+  constructor(private fluxAPIService: FLuxAPIService, public noteService: NoteService) {
+    this.searchParam.valueChanges.pipe(
+      map(value => value?.trim()),
+      debounceTime(300),
+      distinctUntilChanged(),
+      startWith(''),
+      tap(() => this.isLoading = true),
+      switchMap(searchTerm => {
+        if (!searchTerm || searchTerm.length === 0) {
+          return this.fluxAPIService.getAllNotes();
+        } else if (searchTerm.length >= 3) {
+          return this.fluxAPIService.getAllNotes({ search: searchTerm });
+        } else {
+          this.isLoading = false;
+          return of([]);
+        }
+      })
+    ).subscribe(
       (apiData: Note[]) => {
         this.noteService.notes = apiData;
+        this.isLoading = false;
       },
       (error) => {
         console.error('Error fetching notes:', error);
+        this.isLoading = false;
+      }
+    );
+  }
+  ngOnInit(): void {
+    this.isLoading = true;
+    this.fluxAPIService.getAllNotes().subscribe(
+      (apiData: Note[]) => {
+        this.noteService.notes = apiData;
+        this.isLoading = false;
+      },
+      (error) => {
+        console.error('Error fetching notes:', error);
+        this.isLoading = false;
       }
     );
 
@@ -49,6 +82,23 @@ export class NoteMakerComponent implements OnInit {
         console.error('Error creating note:', error);
       }
     );
+  }
+
+  searchNotes(search: string | null) {
+    const params = {
+      search: search
+    }
+    this.isLoading = true;
+    this.fluxAPIService.getAllNotes(params).subscribe(
+      (apiData: Note[]) => {
+        this.noteService.notes = apiData;
+        this.isLoading = false;
+      },
+      (error) => {
+        console.error('Error fetching notes:', error);
+        this.isLoading = false;
+      }
+    )
   }
 
   selectNote(note: Note) {

@@ -7,11 +7,12 @@ import { MailThreadComponent } from './mail-thread/mail-thread.component';
 import { OtherMailFormComponent } from "../other-mail-form/other-mail-form.component";
 import { LoadingSpinnerComponent } from "../../../shared/loading-spinner/loading-spinner.component";
 import { MailThreadDetailComponent } from "./mail-thread-detail/mail-thread-detail.component";
+import { ComposeMailComponent } from "./compose-mail/compose-mail.component";
 
 @Component({
   selector: 'app-mail-box',
   standalone: true,
-  imports: [NgFor, NgIf, FormsModule, MailThreadComponent, OtherMailFormComponent, LoadingSpinnerComponent, MailThreadDetailComponent],
+  imports: [NgFor, NgIf, FormsModule, MailThreadComponent, OtherMailFormComponent, LoadingSpinnerComponent, MailThreadDetailComponent, ComposeMailComponent],
   templateUrl: './mail-box.component.html'
 })
 export class MailBoxComponent {
@@ -88,6 +89,7 @@ export class MailBoxComponent {
   
   selectFilter(filter: string) {
     this.selectedFilter = filter;
+    this.selectedThreadId = undefined;
   }
   
   toggleComposeModal() {
@@ -142,8 +144,24 @@ export class MailBoxComponent {
 
   handleOtherMailSubmit(formData: any): void {
     this.showOtherMailModal = false;
-    const queryParams = new URLSearchParams(formData).toString();
-    this.router.navigate(['/mail-box'], { queryParams: formData });
+    this.isLoading = true;
+    console.log('Other Mail Form Data:', formData);
+    let body: any = formData;
+    const provider = "others_mail";
+    const params = {
+      "provider": provider
+    };
+    this.outreachService.postAuthorizeMail(body, params).subscribe(
+      res => {
+        this.loadMailIntegrations();
+        this.isLoading = false;
+      },
+      error => {
+        console.error('Authorization error:', error);
+        this.isLoading = false;
+      }
+      
+    );
   }
 
   getProviderIcon(providerId: string): string | null {

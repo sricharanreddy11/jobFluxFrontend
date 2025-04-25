@@ -2,6 +2,11 @@ import { Routes } from '@angular/router';
 import { NoteMakerComponent } from './note-maker/note-maker.component';
 import { OutreachComponent } from './outreach/outreach.component';
 import {routes as outreachRoutes} from './outreach/outreach.routes';
+import { DashboardComponent } from './dashboard/dashboard.component';
+import { OrganisationsComponent } from './organisations/organisations.component';
+import { ApplicationsComponent } from './applications/applications.component';
+import { ConnectionsComponent } from './connections/connections.component';
+import { EnhanceCvComponent } from './enhance-cv/enhance-cv.component';
 
 export const routes: Routes = [
     {
@@ -9,22 +14,22 @@ export const routes: Routes = [
         redirectTo: '',
         pathMatch: "full"
     },
-    // {
-    //     path: 'dashboard',
-    //     component: DashboardComponent,
-    // },
-    // {
-    //     path: 'tasks',
-    //     component: TasksComponent,
-    // },
-    // {
-    //     path: 'projects',
-    //     component: ProjectsComponent,
-    // },
-    // { 
-    //     path: 'projects/:id',
-    //      component: ProjectComponent
-    // },
+    {
+        path: 'dashboard',
+        component: DashboardComponent,
+    },
+    {
+        path: 'organisations',
+        component: OrganisationsComponent,
+    },
+    {
+        path: 'applications',
+        component: ApplicationsComponent,
+    },
+    { 
+        path: 'connections',
+         component: ConnectionsComponent
+    },
     {
         path: 'outreach',
         component: OutreachComponent,
@@ -34,10 +39,10 @@ export const routes: Routes = [
         path: 'note-maker',
         component: NoteMakerComponent,
     },
-    // {
-    //     path: 'assistant',
-    //     component: AssistantComponent,
-    // },
+    {
+        path: 'enhancecv',
+        component: EnhanceCvComponent,
+    },
     // {
     //     path: 'profile',
     //     component: ProfileComponent,

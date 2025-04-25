@@ -55,28 +55,28 @@
           
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
-              <label for="imapServer" class="block text-sm font-medium mb-1">IMAP Server</label>
+              <label for="imapserver" class="block text-sm font-medium mb-1">IMAP Server</label>
               <input 
                 type="text" 
-                id="imapServer" 
-                formControlName="imapServer"
+                id="imapserver" 
+                formControlName="imapserver"
                 class="w-full px-3 py-2 border border-[#e0c9a6] rounded-md focus:outline-none focus:ring-2 focus:ring-[#ff7f50]"
                 placeholder="imap.example.com"
               >
-              <div *ngIf="mailForm.get('imapServer')?.touched && mailForm.get('imapServer')?.invalid" class="text-red-500 text-sm mt-1">
+              <div *ngIf="mailForm.get('imapserver')?.touched && mailForm.get('imapserver')?.invalid" class="text-red-500 text-sm mt-1">
                 IMAP server is required
               </div>
             </div>
             
             <div>
-              <label for="imapServerPort" class="block text-sm font-medium mb-1">IMAP Port</label>
+              <label for="imapserverport" class="block text-sm font-medium mb-1">IMAP Port</label>
               <input 
                 type="text" 
-                id="imapServerPort" 
-                formControlName="imapServerPort"
+                id="imapserverport" 
+                formControlName="imapserverport"
                 class="w-full px-3 py-2 border border-[#e0c9a6] rounded-md focus:outline-none focus:ring-2 focus:ring-[#ff7f50]"
               >
-              <div *ngIf="mailForm.get('imapServerPort')?.touched && mailForm.get('imapServerPort')?.invalid" class="text-red-500 text-sm mt-1">
+              <div *ngIf="mailForm.get('imapserverport')?.touched && mailForm.get('imapserverport')?.invalid" class="text-red-500 text-sm mt-1">
                 Valid port number is required
               </div>
             </div>
@@ -84,28 +84,28 @@
           
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             <div>
-              <label for="smtpServer" class="block text-sm font-medium mb-1">SMTP Server</label>
+              <label for="smtpserver" class="block text-sm font-medium mb-1">SMTP Server</label>
               <input 
                 type="text" 
-                id="smtpServer" 
-                formControlName="smtpServer"
+                id="smtpserver" 
+                formControlName="smtpserver"
                 class="w-full px-3 py-2 border border-[#e0c9a6] rounded-md focus:outline-none focus:ring-2 focus:ring-[#ff7f50]"
                 placeholder="smtp.example.com"
               >
-              <div *ngIf="mailForm.get('smtpServer')?.touched && mailForm.get('smtpServer')?.invalid" class="text-red-500 text-sm mt-1">
+              <div *ngIf="mailForm.get('smtpserver')?.touched && mailForm.get('smtpserver')?.invalid" class="text-red-500 text-sm mt-1">
                 SMTP server is required
               </div>
             </div>
             
             <div>
-              <label for="smtpServerPort" class="block text-sm font-medium mb-1">SMTP Port</label>
+              <label for="smtpserverport" class="block text-sm font-medium mb-1">SMTP Port</label>
               <input 
                 type="text" 
-                id="smtpServerPort" 
-                formControlName="smtpServerPort"
+                id="smtpserverport" 
+                formControlName="smtpserverport"
                 class="w-full px-3 py-2 border border-[#e0c9a6] rounded-md focus:outline-none focus:ring-2 focus:ring-[#ff7f50]"
               >
-              <div *ngIf="mailForm.get('smtpServerPort')?.touched && mailForm.get('smtpServerPort')?.invalid" class="text-red-500 text-sm mt-1">
+              <div *ngIf="mailForm.get('smtpserverport')?.touched && mailForm.get('smtpserverport')?.invalid" class="text-red-500 text-sm mt-1">
                 Valid port number is required
               </div>
             </div>

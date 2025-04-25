@@ -1,0 +1,92 @@
+<!-- Modal overlay -->
+<div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <!-- Modal container -->
+    <div class="bg-[var(--color-bg-main)] rounded-lg shadow-xl w-full max-w-md mx-4 max-h-[90vh] flex flex-col overflow-hidden">
+      <!-- Modal header -->
+      <div class="px-6 py-4 border-b border-[var(--color-border)] flex justify-between items-center">
+        <h2 class="text-xl font-semibold text-[var(--color-text)]">
+          {{ isEditing ? 'Edit Organization' : 'Add New Organization' }}
+        </h2>
+        <button 
+          (click)="onClose()" 
+          class="text-[var(--color-text)] hover:text-[var(--color-primary)] transition-colors focus:outline-none">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+  
+      <!-- Modal content -->
+      <div class="px-6 py-4 overflow-y-auto flex-grow">
+        <form [formGroup]="companyForm" (ngSubmit)="onSubmit()">
+          <div class="space-y-4">
+            <div>
+              <label for="name" class="block text-sm font-medium text-[var(--color-text)] mb-1">Company Name*</label>
+              <input 
+                id="name" 
+                type="text" 
+                formControlName="name" 
+                class="w-full p-2 rounded-md border border-[var(--color-border)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
+                placeholder="Enter company name"
+              >
+              <div *ngIf="companyForm.get('name')?.invalid && companyForm.get('name')?.touched" class="text-red-500 text-sm mt-1">
+                Company name is required
+              </div>
+            </div>
+  
+            <div>
+              <label for="website" class="block text-sm font-medium text-[var(--color-text)] mb-1">Website</label>
+              <input 
+                id="website" 
+                type="url" 
+                formControlName="website" 
+                placeholder="https://example.com" 
+                class="w-full p-2 rounded-md border border-[var(--color-border)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
+              >
+              <div *ngIf="companyForm.get('website')?.invalid && companyForm.get('website')?.touched" class="text-red-500 text-sm mt-1">
+                Please enter a valid URL (include http:// or https://)
+              </div>
+            </div>
+  
+            <div>
+              <label for="industry" class="block text-sm font-medium text-[var(--color-text)] mb-1">Industry</label>
+              <input 
+                id="industry" 
+                type="text" 
+                formControlName="industry" 
+                placeholder="e.g. Technology, Healthcare, Finance"
+                class="w-full p-2 rounded-md border border-[var(--color-border)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
+              >
+            </div>
+  
+            <div>
+              <label for="description" class="block text-sm font-medium text-[var(--color-text)] mb-1">Description</label>
+              <textarea 
+                id="description" 
+                rows="4" 
+                formControlName="description" 
+                placeholder="Brief description of the company"
+                class="w-full p-2 rounded-md border border-[var(--color-border)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
+              ></textarea>
+            </div>
+          </div>
+  
+          <!-- Modal footer -->
+          <div class="mt-6 flex justify-end space-x-3">
+            <button 
+              type="button" 
+              (click)="onClose()" 
+              class="px-4 py-2 border border-[var(--color-border)] rounded-md text-[var(--color-text)] hover:bg-[var(--color-bg-hover)] transition-colors focus:outline-none">
+              Cancel
+            </button>
+            <button 
+              type="submit" 
+              [disabled]="companyForm.invalid || isLoading" 
+              class="px-4 py-2 bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none">
+              {{ isLoading ? 'Saving...' : 'Save' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>

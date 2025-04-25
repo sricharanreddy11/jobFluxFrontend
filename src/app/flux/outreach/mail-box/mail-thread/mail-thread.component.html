@@ -24,9 +24,11 @@
           <!-- Sender info -->
           <div class="flex items-center">
             <div class="sender-info">
+              @if(thread.latest_message){
             <h3 class="font-medium text-[var(--color-text)]">{{ thread.latest_message.subject }} - 
                 <span class="text-sm text-[var(--color-muted)]">{{ getBodyPreview(thread.latest_message.body) }}</span>  
             </h3>
+          }
             </div>
           </div>
           
