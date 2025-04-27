@@ -7,13 +7,13 @@ import { AddOrganisationComponent } from "./add-organisation/add-organisation.co
 import { Company } from './organisations.models';
 import { of } from 'rxjs';
 import { FLuxAPIService } from '../flux.service';
-import { OrganisationsService } from './organisations.service';
+import { OrganisationDetailComponent } from './organisation-detail/organisation-detail.component';
 
 
 @Component({
   selector: 'app-organisations',
   standalone: true,
-  imports: [NgIf, NgFor, ReactiveFormsModule, FormsModule, DatePipe, AddOrganisationComponent],
+  imports: [NgIf, NgFor, ReactiveFormsModule, FormsModule, DatePipe, AddOrganisationComponent, OrganisationDetailComponent],
   templateUrl: './organisations.component.html',
   styleUrl: './organisations.component.css'
 })
@@ -21,11 +21,12 @@ export class OrganisationsComponent{
   isLoading = false;
   sortDirection = 'desc';
   showAddModal = false;
-  companyToEdit: Company | null = null;
   searchTerm = new FormControl('');
+  organisations: any[] = [];
+  selectedOrganisation: any;
   
 
-  constructor(private http: HttpClient, private fluxAPIService: FLuxAPIService, public organisationService: OrganisationsService) {
+  constructor(private http: HttpClient, private fluxAPIService: FLuxAPIService) {
     this.searchTerm.valueChanges.pipe(
           map(value => value?.trim()),
           debounceTime(300),
@@ -44,7 +45,7 @@ export class OrganisationsComponent{
           })
         ).subscribe(
           (apiData: Company[]) => {
-            this.organisationService.organisations = apiData;
+            this.organisations = apiData;
             this.isLoading = false;
           },
           (error) => {
@@ -55,7 +56,7 @@ export class OrganisationsComponent{
   }
 
   ngOnInit(): void {
-    this.organisationService.selectedOrganisation = null;
+    this.selectedOrganisation = null;
     this.loadCompanies();
   }
 
@@ -65,43 +66,35 @@ export class OrganisationsComponent{
       .pipe(finalize(() => this.isLoading = false))
       .subscribe({
         next: (data) => {
-          this.organisationService.organisations = data;
-          console.log('Companies loaded:', this.organisationService.organisations);
+          this.organisations = data;
+          console.log('Companies loaded:', this.organisations);
         },
         error: (error) => console.error('Error loading companies', error)
       });
   }
 
   selectCompany(company: Company): void {
-    this.organisationService.selectedOrganisation = company;
+    this.selectedOrganisation = company;
   }
 
   openAddModal(): void {
-    this.companyToEdit = null;
-    this.showAddModal = true;
-  }
-
-  openEditModal(company: Company): void {
-    this.companyToEdit = company;
     this.showAddModal = true;
   }
 
   closeModal(): void {
     this.showAddModal = false;
-    this.companyToEdit = null;
   }
 
   refreshList(updatedCompany: any): void {
     this.showAddModal = false;
-    this.companyToEdit = null;
-    this.organisationService.selectedOrganisation = updatedCompany;
+    this.selectedOrganisation = updatedCompany;
     this.loadCompanies();
   }
 
   deleteCompany(company: Company): void {
     if (confirm(`Are you sure you want to delete ${company.name}?`)) {
       this.isLoading = true;
-      this.http.delete(`/api/companies/${company.id}/`)
+      this.fluxAPIService.deleteOrganisation(String(company.id))
         .pipe(finalize(() => this.isLoading = false))
         .subscribe({
           next: () => {

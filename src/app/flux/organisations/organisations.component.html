@@ -3,7 +3,7 @@
     <div class="w-1/3 bg-[#ffffff] border-r border-[var(--color-border)] overflow-auto h-full flex flex-col">
       <!-- Header with search -->
       <div class="p-4 border-b border-[var(--color-border)] bg-white">
-        <h2 class="text-xl font-semibold text-[var(--color-secondary)]">Organizations</h2>
+        <h2 class="text-xl font-semibold text-[var(--color-secondary)]">Organisations</h2>
         <div class="mt-2 relative">
           <input 
             type="text" 
@@ -36,11 +36,11 @@
           <p class="mt-2">Loading companies...</p>
         </div>
   
-        <div *ngIf="!isLoading && (!this.organisationService.organisations || this.organisationService.organisations.length === 0)" class="p-4 text-center text-[var(--color-text)]">
+        <div *ngIf="!isLoading && (!this.organisations || this.organisations.length === 0)" class="p-4 text-center text-[var(--color-text)]">
           <p>No companies found. Add your first company!</p>
         </div>
-        <div *ngFor="let company of this.organisationService.organisations" 
-            [class.bg-[var(--color-bg-active)]]="this.organisationService.selectedOrganisation?.id === company.id"
+        <div *ngFor="let company of this.organisations" 
+            [class.bg-[var(--color-bg-active)]]="this.selectedOrganisation?.id === company.id"
              class="border-b border-[var(--color-border)] hover:bg-[var(--color-bg-hover)] cursor-pointer transition-colors"
              (click)="selectCompany(company)">
           <div class="flex items-center p-3">
@@ -67,103 +67,21 @@
         </button>
       </div>
     </div>
-  
-    <!-- Detail view -->
+
     <div class="w-2/3 bg-white p-6 overflow-auto h-full flex flex-col">
-      <!-- Empty state -->
-      <div *ngIf="!this.organisationService.selectedOrganisation" class="flex-grow flex flex-col items-center justify-center text-center p-6">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 text-[var(--color-secondary)] mb-4 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-        </svg>
-        <h3 class="text-xl font-semibold text-[var(--color-text)] mb-2">No Organization Selected</h3>
-        <p class="text-[var(--color-text)] max-w-md">
-          Select an organization from the list or add a new one to view details.
-        </p>
-        <button 
-          (click)="openAddModal()" 
-          class="mt-6 px-6 py-2 rounded-md bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white font-medium transition-colors">
-          Add Organization
-        </button>
-      </div>
   
-      <!-- Detail view -->
-      <div *ngIf="this.organisationService.selectedOrganisation" class="flex-grow">
-        <div class="flex justify-between items-start mb-6">
-          <h2 class="text-2xl font-semibold text-[var(--color-text)]">{{ this.organisationService.selectedOrganisation.name }}</h2>
-          <div class="flex space-x-2">
-            <button 
-              (click)="openEditModal(this.organisationService.selectedOrganisation)" 
-              class="p-2 rounded-md text-[var(--color-secondary)] hover:bg-[var(--color-bg-hover)] transition-colors">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-              </svg>
-            </button>
-            <button 
-              (click)="deleteCompany(this.organisationService.selectedOrganisation)" 
-              class="p-2 rounded-md text-red-500 hover:bg-red-50 transition-colors">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-              </svg>
-            </button>
-          </div>
-        </div>
-  
-        <div class="bg-white rounded-lg shadow-sm border border-[var(--color-border)] overflow-hidden">
-          <div class="p-5 border-b border-[var(--color-border)]">
-            <div class="flex items-start">
-              <div class="flex-grow">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <h3 class="text-sm font-medium text-[var(--color-category)]">Industry</h3>
-                    <p class="mt-1 text-[var(--color-text)]">{{ this.organisationService.selectedOrganisation.industry || 'Not specified' }}</p>
-                  </div>
-                  <div>
-                    <h3 class="text-sm font-medium text-[var(--color-category)]">Website</h3>
-                    <p class="mt-1">
-                      <a 
-                        *ngIf="this.organisationService.selectedOrganisation.website" 
-                        [href]="this.organisationService.selectedOrganisation.website" 
-                        target="_blank" 
-                        class="text-[var(--color-secondary)] hover:underline flex items-center"
-                      >
-                        {{ this.organisationService.selectedOrganisation.website }}
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                        </svg>
-                      </a>
-                      <span *ngIf="!this.organisationService.selectedOrganisation.website" class="text-[var(--color-text)]">Not specified</span>
-                    </p>
-                  </div>
-                </div>
-                
-                <div class="mt-6">
-                  <h3 class="text-sm font-medium text-[var(--color-category)]">Description</h3>
-                  <p class="mt-1 text-[var(--color-text)] whitespace-pre-line">{{ this.organisationService.selectedOrganisation.description || 'No description available.' }}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-  
-          <div class="bg-[var(--color-bg-sidebar)] px-5 py-3 text-sm flex justify-between items-center">
-            <span class="text-[var(--color-text)]">Added: {{ this.organisationService.selectedOrganisation.created_at | date:'medium' }}</span>
-            <span class="text-[var(--color-category)]">ID: {{ this.organisationService.selectedOrganisation.id }}</span>
-          </div>
-        </div>
-  
-        <!-- Placeholder for future related content (applications, contacts) -->
-        <div class="mt-8">
-          <h3 class="text-lg font-medium text-[var(--color-text)] mb-4">Related Data</h3>
-          <div class="bg-white rounded-lg border border-[var(--color-border)] p-5 text-center text-[var(--color-text)]">
-            <p>Applications and contacts related to this organization will appear here.</p>
-          </div>
-        </div>
-      </div>
-    </div>
+    <app-organisation-detail
+      *ngIf="this.selectedOrganisation"
+      [inputOrganisation]="this.selectedOrganisation"
+      (delete)="deleteCompany($event)"
+      (refresh)="refreshList($event)"
+    ></app-organisation-detail>
+  </div>
+
   
     <!-- Modal component for adding/editing -->
     <app-add-organisation
       *ngIf="showAddModal"
-      [company]="companyToEdit"
       (close)="closeModal()"
       (refresh)="refreshList($event)"
     ></app-add-organisation>

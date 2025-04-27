@@ -65,6 +65,10 @@ export class FLuxAPIService{
         return this.httpClient.put(this.apiUrl + 'flux/companies/' + organisation_id + '/',formData);
     }
 
+    deleteOrganisation(organisation_id: string) {
+        return this.httpClient.delete(this.apiUrl + 'flux/companies/' + organisation_id + '/');
+    }
+
     getAllNotes(paramsObj?: { [key: string]: any }): Observable<Note[]> {
         let params = new HttpParams();
 

@@ -7,6 +7,8 @@ import { OrganisationsComponent } from './organisations/organisations.component'
 import { ApplicationsComponent } from './applications/applications.component';
 import { ConnectionsComponent } from './connections/connections.component';
 import { EnhanceCvComponent } from './enhance-cv/enhance-cv.component';
+import { ConnectionDetailComponent } from './connections/connection-detail/connection-detail.component';
+import { ConnectionListComponent } from './connections/connection-list/connection-list.component';
 
 export const routes: Routes = [
     {
@@ -28,7 +30,17 @@ export const routes: Routes = [
     },
     { 
         path: 'connections',
-         component: ConnectionsComponent
+        component: ConnectionsComponent,
+        children: [
+            {
+                path: '',
+                component: ConnectionListComponent,
+            },
+            {
+                path: ':id',
+                component: ConnectionDetailComponent,
+            }
+        ]
     },
     {
         path: 'outreach',

@@ -1,0 +1,22 @@
+/* connections.component.scss */
+:host {
+    display: block;
+  }
+  
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  /* connection-detail.component.scss */
+  :host {
+    display: block;
+  }
+  
+  /* add-connection.component.scss */
+  :host {
+    display: block;
+  }
