@@ -1,28 +1,28 @@
 import { Component } from '@angular/core';
-import { ConnectionsService } from '../connections.service';
-import { Router } from '@angular/router';
-import { AddConnectionComponent } from "../add-connection/add-connection.component";
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { NgFor, NgIf } from '@angular/common';
+import { Router } from '@angular/router';
 import { map, debounceTime, distinctUntilChanged, startWith, tap, switchMap, of } from 'rxjs';
+import { ApplicationsService } from '../applications.service';
+import { AddApplicationComponent } from "../add-application/add-application.component";
 import { LoadingSpinnerComponent } from "../../../shared/loading-spinner/loading-spinner.component";
+import { NgFor, NgIf } from '@angular/common';
 
 @Component({
-  selector: 'app-connection-list',
+  selector: 'app-application-list',
   standalone: true,
-  imports: [AddConnectionComponent, ReactiveFormsModule, NgIf, FormsModule, NgFor, LoadingSpinnerComponent],
-  templateUrl: './connection-list.component.html',
-  styleUrl: './connection-list.component.css'
+  imports: [AddApplicationComponent, LoadingSpinnerComponent, NgIf, NgFor, FormsModule, ReactiveFormsModule],
+  templateUrl: './application-list.component.html',
+  styleUrl: './application-list.component.css'
 })
-export class ConnectionListComponent {
-  connections: any[] = [];
+export class ApplicationListComponent {
+  applications: any[] = [];
   searchTerm = new FormControl('');
   
   showAddModal: boolean = false;
   isLoading: boolean = true;
 
   constructor(
-    private connectionsService: ConnectionsService,
+    private applicationsService: ApplicationsService,
     private router: Router
   ) {
     this.searchTerm.valueChanges.pipe(
@@ -33,9 +33,9 @@ export class ConnectionListComponent {
               tap(() => this.isLoading = true),
               switchMap(searchTerm => {
                 if (!searchTerm || searchTerm.length === 0) {
-                  return this.connectionsService.getConnections();
+                  return this.applicationsService.getApplications();
                 } else if (searchTerm.length >= 3) {
-                  return this.connectionsService.getConnections({ search: searchTerm });
+                  return this.applicationsService.getApplications({ search: searchTerm });
                 } else {
                   this.isLoading = false;
                   return of([]);
@@ -43,7 +43,7 @@ export class ConnectionListComponent {
               })
             ).subscribe(
               (apiData: any[]) => {
-                this.connections = apiData;
+                this.applications = apiData;
                 this.isLoading = false;
               },
               (error) => {
@@ -54,46 +54,45 @@ export class ConnectionListComponent {
    }
 
   ngOnInit(): void {
-    this.loadConnections();
+    this.loadApplications();
   }
 
-  loadConnections(): void {
+  loadApplications(): void {
     this.isLoading = true;
-    this.connectionsService.getConnections().subscribe({
+    this.applicationsService.getApplications().subscribe({
       next: (data) => {
-        this.connections = data;
+        this.applications = data;
         this.isLoading = false;
       },
       error: (error) => {
-        console.error('Error fetching connections:', error);
+        console.error('Error fetching Applications:', error);
         this.isLoading = false;
       }
     });
   }
 
-  viewConnectionDetail(id: number): void {
-    this.router.navigate(['/flux/connections', id]);
+  viewApplicationDetail(id: number): void {
+    this.router.navigate(['/flux/applications', id]);
   }
 
   openAddModal(): void {
     this.showAddModal = true;
   }
 
-  closeAddModal(refresh: boolean = false): void {
+  closeAddModal(refresh: any = false): void {
     this.showAddModal = false;
     if (refresh) {
-      this.loadConnections();
+      this.loadApplications();
     }
   }
 
-  deleteConnection(id: number, event: Event): void {
+  deleteApplication(id: number, event: Event): void {
     event.stopPropagation();
-    if (confirm('Are you sure you want to delete this connection?')) {
-      this.connectionsService.deleteConnection(id).subscribe({
-        next: () => console.log('Connection deleted successfully'),
-        error: (error) => console.error('Error deleting connection:', error)
+    if (confirm('Are you sure you want to delete this Application?')) {
+      this.applicationsService.deleteApplication(id).subscribe({
+        next: () => console.log('Application deleted successfully'),
+        error: (error) => console.error('Error deleting Application:', error)
       });
     }
   }
 }
-

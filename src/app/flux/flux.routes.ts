@@ -9,6 +9,8 @@ import { ConnectionsComponent } from './connections/connections.component';
 import { EnhanceCvComponent } from './enhance-cv/enhance-cv.component';
 import { ConnectionDetailComponent } from './connections/connection-detail/connection-detail.component';
 import { ConnectionListComponent } from './connections/connection-list/connection-list.component';
+import { ApplicationListComponent } from './applications/application-list/application-list.component';
+import { ApplicationDetailComponent } from './applications/application-detail/application-detail.component';
 
 export const routes: Routes = [
     {
@@ -27,6 +29,16 @@ export const routes: Routes = [
     {
         path: 'applications',
         component: ApplicationsComponent,
+        children: [
+            {
+                path: '',
+                component: ApplicationListComponent,
+            },
+            {
+                path: ':id',
+                component: ApplicationDetailComponent,
+            }
+        ]
     },
     { 
         path: 'connections',
