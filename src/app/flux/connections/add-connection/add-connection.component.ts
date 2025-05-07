@@ -29,7 +29,7 @@ export class AddConnectionComponent {
     this.connectionForm = this.fb.group({
       name: ['', Validators.required],
       position: [''],
-      company: [null],
+      company_id: [null],
       email: ['', Validators.email],
       phone: [''],
       linkedin_url: ['', Validators.pattern(/^(http(s)?:\/\/)?([\w]+\.)?linkedin\.com\/(pub|in|profile)/)],
@@ -76,7 +76,7 @@ export class AddConnectionComponent {
       next: (response) => {
         this.companies.push(response);
         this.connectionForm.patchValue({
-          company: response
+          company_id: response.id
         });
         this.showCompanyForm = false;
         this.companyForm.reset();

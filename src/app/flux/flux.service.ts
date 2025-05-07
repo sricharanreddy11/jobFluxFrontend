@@ -3,7 +3,6 @@ import { environment } from "../../environments/environment.development";
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { Note } from "./note-maker/note.model";
-import { Company } from "./organisations/organisations.models";
 
 @Injectable({
     providedIn: "root" 
@@ -42,7 +41,7 @@ export class FLuxAPIService{
         return this.httpClient.get(this.apiUrl + 'track/tasks/alerts/');
     }
 
-    getOrganisations(paramsObj?: { [key: string]: any }): Observable<Company[]> {
+    getOrganisations(paramsObj?: { [key: string]: any }): Observable<any> {
         let params = new HttpParams();
 
         if (paramsObj) {
@@ -50,15 +49,15 @@ export class FLuxAPIService{
                 params = params.set(key, paramsObj[key]);
             });
         }
-        return this.httpClient.get<Company[]>(this.apiUrl + 'flux/companies/', { params });
+        return this.httpClient.get(this.apiUrl + 'flux/companies/', { params });
     }
     
     getOrganisationDetail(id: string): Observable<any>{
         return this.httpClient.get(this.apiUrl + 'flux/companies/' + id + '/');
     }
 
-    createOrganisation(formData: any) {
-        return this.httpClient.post(this.apiUrl + 'flux/companies/',formData);
+    createOrganisation(formData: any): Observable<any> {
+        return this.httpClient.post(this.apiUrl + 'flux/companies/', formData);
     }
 
     updateOrganisation(formData: any, organisation_id: string) {
@@ -91,5 +90,4 @@ export class FLuxAPIService{
     deleteNote(note_id : string): Observable<any>{
         return this.httpClient.delete(this.apiUrl + 'flux/notes/' + note_id + '/');
     }
-    
 }

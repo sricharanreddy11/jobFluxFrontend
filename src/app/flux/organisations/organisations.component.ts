@@ -9,7 +9,6 @@ import { of } from 'rxjs';
 import { FLuxAPIService } from '../flux.service';
 import { OrganisationDetailComponent } from './organisation-detail/organisation-detail.component';
 
-
 @Component({
   selector: 'app-organisations',
   standalone: true,
@@ -17,42 +16,41 @@ import { OrganisationDetailComponent } from './organisation-detail/organisation-
   templateUrl: './organisations.component.html',
   styleUrl: './organisations.component.css'
 })
-export class OrganisationsComponent{
+export class OrganisationsComponent {
   isLoading = false;
   sortDirection = 'desc';
   showAddModal = false;
   searchTerm = new FormControl('');
   organisations: any[] = [];
   selectedOrganisation: any;
-  
 
   constructor(private http: HttpClient, private fluxAPIService: FLuxAPIService) {
     this.searchTerm.valueChanges.pipe(
-          map(value => value?.trim()),
-          debounceTime(300),
-          distinctUntilChanged(),
-          startWith(''),
-          tap(() => this.isLoading = true),
-          switchMap(searchTerm => {
-            if (!searchTerm || searchTerm.length === 0) {
-              return this.fluxAPIService.getOrganisations();
-            } else if (searchTerm.length >= 3) {
-              return this.fluxAPIService.getOrganisations({ search: searchTerm });
-            } else {
-              this.isLoading = false;
-              return of([]);
-            }
-          })
-        ).subscribe(
-          (apiData: Company[]) => {
-            this.organisations = apiData;
-            this.isLoading = false;
-          },
-          (error) => {
-            console.error('Error fetching organisations:', error);
-            this.isLoading = false;
-          }
-        );
+      map(value => value?.trim()),
+      debounceTime(300),
+      distinctUntilChanged(),
+      startWith(''),
+      tap(() => this.isLoading = true),
+      switchMap(searchTerm => {
+        if (!searchTerm || searchTerm.length === 0) {
+          return this.fluxAPIService.getOrganisations();
+        } else if (searchTerm.length >= 3) {
+          return this.fluxAPIService.getOrganisations({ search: searchTerm });
+        } else {
+          this.isLoading = false;
+          return of([]);
+        }
+      })
+    ).subscribe(
+      (apiData: Company[]) => {
+        this.organisations = apiData;
+        this.isLoading = false;
+      },
+      (error) => {
+        console.error('Error fetching organisations:', error);
+        this.isLoading = false;
+      }
+    );
   }
 
   ngOnInit(): void {
@@ -103,5 +101,4 @@ export class OrganisationsComponent{
         });
     }
   }
-
 }

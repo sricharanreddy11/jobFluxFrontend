@@ -43,7 +43,7 @@ export class ConnectionDetailComponent {
     this.editForm = this.fb.group({
       name: ['', Validators.required],
       position: [''],
-      company: [null],
+      company_id: [null],
       email: ['', Validators.email],
       phone: [''],
       linkedin_url: ['', Validators.pattern(/^(http(s)?:\/\/)?([\w]+\.)?linkedin\.com\/(pub|in|profile)/)],
@@ -78,7 +78,7 @@ export class ConnectionDetailComponent {
     this.editForm.patchValue({
       name: this.connection.name,
       position: this.connection.position,
-      company: this.connection.company?.id,
+      company_id: this.connection.company?.id,
       email: this.connection.email,
       phone: this.connection.phone,
       linkedin_url: this.connection.linkedin_url,
@@ -153,7 +153,7 @@ export class ConnectionDetailComponent {
       ...this.connection,
       name: formValue.name,
       position: formValue.position,
-      company: formValue.company,
+      company_id: formValue.company_id,
       email: formValue.email,
       phone: formValue.phone,
       linkedin_url: formValue.linkedin_url,

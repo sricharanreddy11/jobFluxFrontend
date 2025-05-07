@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { DatePipe, NgIf } from '@angular/common';
+import { DatePipe, NgFor, NgIf } from '@angular/common';
 import { Company } from '../organisations.models';
 import { finalize } from 'rxjs/operators';
 import { AddOrganisationComponent } from "../add-organisation/add-organisation.component";
@@ -12,7 +12,8 @@ import { DeleteModalComponent } from '../../../shared/delete-modal/delete-modal.
   standalone: true,
   imports: [
     DatePipe, 
-    NgIf, 
+    NgIf,
+    NgFor,
     AddOrganisationComponent, 
     LoadingSpinnerComponent,
     DeleteModalComponent
@@ -29,6 +30,7 @@ export class OrganisationDetailComponent {
     showEditModal = false;
     showDeleteModal = false;
     organisation: any;
+    activeTab: 'contacts' | 'applications' = 'contacts';
 
     
     ngOnChanges(): void {
