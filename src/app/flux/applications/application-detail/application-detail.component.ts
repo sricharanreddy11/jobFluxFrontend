@@ -4,11 +4,19 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ApplicationsService } from '../applications.service';
 import { LoadingSpinnerComponent } from '../../../shared/loading-spinner/loading-spinner.component';
 import { AddApplicationComponent } from '../add-application/add-application.component';
+import { DeleteModalComponent } from '../../../shared/delete-modal/delete-modal.component';
 
 @Component({
   selector: 'app-application-detail',
   standalone: true,
-  imports: [CommonModule, DatePipe, CurrencyPipe, LoadingSpinnerComponent, AddApplicationComponent],
+  imports: [
+    CommonModule, 
+    DatePipe, 
+    CurrencyPipe, 
+    LoadingSpinnerComponent, 
+    AddApplicationComponent,
+    DeleteModalComponent
+  ],
   templateUrl: './application-detail.component.html',
   styleUrl: './application-detail.component.css'
 })
@@ -17,6 +25,7 @@ export class ApplicationDetailComponent implements OnInit {
   isLoading = true;
   errorMessage = '';
   showEditModal = false;
+  showDeleteModal = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -83,16 +92,23 @@ export class ApplicationDetailComponent implements OnInit {
   }
 
   onDelete(): void {
-    if (confirm('Are you sure you want to delete this application?')) {
-      this.applicationsService.deleteApplication(this.application.id).subscribe({
-        next: () => {
-          this.router.navigate(['/flux/applications']);
-        },
-        error: (error) => {
-          this.errorMessage = 'Error deleting application';
-          console.error('Error deleting application:', error);
-        }
-      });
-    }
+    this.showDeleteModal = true;
+  }
+
+  onDeleteConfirm(): void {
+    this.applicationsService.deleteApplication(this.application.id).subscribe({
+      next: () => {
+        this.router.navigate(['/flux/applications']);
+      },
+      error: (error) => {
+        this.errorMessage = 'Error deleting application';
+        console.error('Error deleting application:', error);
+        this.showDeleteModal = false;
+      }
+    });
+  }
+
+  onDeleteCancel(): void {
+    this.showDeleteModal = false;
   }
 }

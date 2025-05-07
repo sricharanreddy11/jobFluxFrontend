@@ -112,3 +112,13 @@
     *ngIf="showAddModal" 
     (closeModal)="closeAddModal($event)">
   </app-add-connection>
+
+  <!-- Delete Modal -->
+  <app-delete-modal
+    [isOpen]="showDeleteModal"
+    [title]="'Delete Connection'"
+    [message]="'Are you sure you want to delete this connection?'"
+    [itemName]="connectionToDelete?.name"
+    (confirm)="onDeleteConfirm()"
+    (cancel)="onDeleteCancel()">
+  </app-delete-modal>

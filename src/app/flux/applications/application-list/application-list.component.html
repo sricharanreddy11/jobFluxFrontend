@@ -150,3 +150,13 @@
       *ngIf="showStatusModal"
       (closeModal)="closeStatusModal($event)">
   </app-manage-statuses>
+
+  <!-- Delete Modal -->
+  <app-delete-modal
+    [isOpen]="showDeleteModal"
+    [title]="'Delete Application'"
+    [message]="'Are you sure you want to delete this application?'"
+    [itemName]="applicationToDelete?.title"
+    (confirm)="onDeleteConfirm()"
+    (cancel)="onDeleteCancel()">
+  </app-delete-modal>

@@ -5,11 +5,18 @@ import { finalize } from 'rxjs/operators';
 import { AddOrganisationComponent } from "../add-organisation/add-organisation.component";
 import { FLuxAPIService } from '../../flux.service';
 import { LoadingSpinnerComponent } from "../../../shared/loading-spinner/loading-spinner.component";
+import { DeleteModalComponent } from '../../../shared/delete-modal/delete-modal.component';
 
 @Component({
   selector: 'app-organisation-detail',
   standalone: true,
-  imports: [DatePipe, NgIf, AddOrganisationComponent, LoadingSpinnerComponent],
+  imports: [
+    DatePipe, 
+    NgIf, 
+    AddOrganisationComponent, 
+    LoadingSpinnerComponent,
+    DeleteModalComponent
+  ],
   templateUrl: './organisation-detail.component.html',
   styleUrl: './organisation-detail.component.css'
 })
@@ -20,6 +27,7 @@ export class OrganisationDetailComponent {
     @Output() refresh = new EventEmitter<Company>();
     @Output() delete = new EventEmitter<Company>();
     showEditModal = false;
+    showDeleteModal = false;
     organisation: any;
 
     
@@ -55,9 +63,18 @@ export class OrganisationDetailComponent {
   }
   
     deleteCompany(company: Company): void {
+      this.showDeleteModal = true;
+    }
+
+    onDeleteConfirm(): void {
       this.isLoading = true;
-      this.delete.emit(company);
+      this.delete.emit(this.organisation);
       this.isLoading = false;
-      this.organisation = null;;
-  }  
+      this.organisation = null;
+      this.showDeleteModal = false;
+    }
+
+    onDeleteCancel(): void {
+      this.showDeleteModal = false;
+    }
 }

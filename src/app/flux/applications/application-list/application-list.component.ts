@@ -6,6 +6,7 @@ import { ApplicationsService } from '../applications.service';
 import { AddApplicationComponent } from "../add-application/add-application.component";
 import { ManageStatusesComponent } from "../manage-statuses/manage-statuses.component";
 import { LoadingSpinnerComponent } from "../../../shared/loading-spinner/loading-spinner.component";
+import { DeleteModalComponent } from "../../../shared/delete-modal/delete-modal.component";
 import { NgFor, NgIf, DatePipe, CurrencyPipe } from '@angular/common';
 
 @Component({
@@ -15,6 +16,7 @@ import { NgFor, NgIf, DatePipe, CurrencyPipe } from '@angular/common';
     AddApplicationComponent,
     ManageStatusesComponent,
     LoadingSpinnerComponent,
+    DeleteModalComponent,
     NgIf,
     NgFor,
     FormsModule,
@@ -33,6 +35,8 @@ export class ApplicationListComponent implements OnInit {
   isLoading: boolean = true;
   hasStatuses: boolean = false;
   selectedApplication: any = null;
+  showDeleteModal: boolean = false;
+  applicationToDelete: any = null;
 
   constructor(
     private applicationsService: ApplicationsService,
@@ -136,15 +140,30 @@ export class ApplicationListComponent implements OnInit {
 
   deleteApplication(id: number, event: Event): void {
     event.stopPropagation();
-    if (confirm('Are you sure you want to delete this Application?')) {
-      this.applicationsService.deleteApplication(id).subscribe({
+    this.applicationToDelete = this.applications.find(app => app.id === id);
+    this.showDeleteModal = true;
+  }
+
+  onDeleteConfirm(): void {
+    if (this.applicationToDelete) {
+      this.applicationsService.deleteApplication(this.applicationToDelete.id).subscribe({
         next: () => {
           this.loadApplications();
-          console.log('Application deleted successfully');
+          this.showDeleteModal = false;
+          this.applicationToDelete = null;
         },
-        error: (error) => console.error('Error deleting Application:', error)
+        error: (error) => {
+          console.error('Error deleting Application:', error);
+          this.showDeleteModal = false;
+          this.applicationToDelete = null;
+        }
       });
     }
+  }
+
+  onDeleteCancel(): void {
+    this.showDeleteModal = false;
+    this.applicationToDelete = null;
   }
 
   getStatusClass(status: string): string {

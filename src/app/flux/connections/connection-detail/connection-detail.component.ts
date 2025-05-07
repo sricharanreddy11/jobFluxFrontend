@@ -4,11 +4,19 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FLuxAPIService } from '../../flux.service';
 import { ConnectionsService } from '../connections.service';
 import { CommonModule, DatePipe, NgIf } from '@angular/common';
+import { DeleteModalComponent } from '../../../shared/delete-modal/delete-modal.component';
 
 @Component({
   selector: 'app-connection-detail',
   standalone: true,
-  imports: [NgIf, ReactiveFormsModule, FormsModule, DatePipe, CommonModule],
+  imports: [
+    NgIf, 
+    ReactiveFormsModule, 
+    FormsModule, 
+    DatePipe, 
+    CommonModule,
+    DeleteModalComponent
+  ],
   templateUrl: './connection-detail.component.html',
   styleUrl: './connection-detail.component.css'
 })
@@ -18,6 +26,7 @@ export class ConnectionDetailComponent {
   companies: any[] = [];
   isLoading: boolean = true;
   isEditing: boolean = false;
+  showDeleteModal: boolean = false;
   editForm: FormGroup;
   emailHistory: any[] = [];
   activities: any[] = [];
@@ -161,14 +170,23 @@ export class ConnectionDetailComponent {
   }
 
   deleteConnection(): void {
-    if (confirm('Are you sure you want to delete this connection? This action cannot be undone.')) {
-      this.connectionsService.deleteConnection(this.connectionId).subscribe({
-        next: () => {
-          this.router.navigate(['/connections']);
-        },
-        error: (error) => console.error('Error deleting connection:', error)
-      });
-    }
+    this.showDeleteModal = true;
+  }
+
+  onDeleteConfirm(): void {
+    this.connectionsService.deleteConnection(this.connectionId).subscribe({
+      next: () => {
+        this.router.navigate(['/flux/connections']);
+      },
+      error: (error) => {
+        console.error('Error deleting connection:', error);
+        this.showDeleteModal = false;
+      }
+    });
+  }
+
+  onDeleteCancel(): void {
+    this.showDeleteModal = false;
   }
 
   navigateBack(): void {

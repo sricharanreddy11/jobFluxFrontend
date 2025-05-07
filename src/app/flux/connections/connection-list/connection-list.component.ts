@@ -6,11 +6,20 @@ import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgFor, NgIf } from '@angular/common';
 import { map, debounceTime, distinctUntilChanged, startWith, tap, switchMap, of } from 'rxjs';
 import { LoadingSpinnerComponent } from "../../../shared/loading-spinner/loading-spinner.component";
+import { DeleteModalComponent } from "../../../shared/delete-modal/delete-modal.component";
 
 @Component({
   selector: 'app-connection-list',
   standalone: true,
-  imports: [AddConnectionComponent, ReactiveFormsModule, NgIf, FormsModule, NgFor, LoadingSpinnerComponent],
+  imports: [
+    AddConnectionComponent, 
+    ReactiveFormsModule, 
+    NgIf, 
+    FormsModule, 
+    NgFor, 
+    LoadingSpinnerComponent,
+    DeleteModalComponent
+  ],
   templateUrl: './connection-list.component.html',
   styleUrl: './connection-list.component.css'
 })
@@ -19,6 +28,8 @@ export class ConnectionListComponent {
   searchTerm = new FormControl('');
   
   showAddModal: boolean = false;
+  showDeleteModal: boolean = false;
+  connectionToDelete: any = null;
   isLoading: boolean = true;
 
   constructor(
@@ -88,12 +99,30 @@ export class ConnectionListComponent {
 
   deleteConnection(id: number, event: Event): void {
     event.stopPropagation();
-    if (confirm('Are you sure you want to delete this connection?')) {
-      this.connectionsService.deleteConnection(id).subscribe({
-        next: () => console.log('Connection deleted successfully'),
-        error: (error) => console.error('Error deleting connection:', error)
+    this.connectionToDelete = this.connections.find(conn => conn.id === id);
+    this.showDeleteModal = true;
+  }
+
+  onDeleteConfirm(): void {
+    if (this.connectionToDelete) {
+      this.connectionsService.deleteConnection(this.connectionToDelete.id).subscribe({
+        next: () => {
+          this.loadConnections();
+          this.showDeleteModal = false;
+          this.connectionToDelete = null;
+        },
+        error: (error) => {
+          console.error('Error deleting connection:', error);
+          this.showDeleteModal = false;
+          this.connectionToDelete = null;
+        }
       });
     }
+  }
+
+  onDeleteCancel(): void {
+    this.showDeleteModal = false;
+    this.connectionToDelete = null;
   }
 }
 
