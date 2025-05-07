@@ -6,6 +6,7 @@
     --color-primary: #ff7f50;      /* Coral - Used for brand and actions */
     --color-primary-hover: #ff5714; /* Darker coral for hover states */
     --color-secondary: #168aad;    /* Teal blue - Used for icons and accents */
+    --color-secondary-hover: #0c85aa;    /* Teal blue - Used for icons and accents */
     --color-bg-main: #fdf6ec;      /* Cream - Main background */
     --color-bg-sidebar: #fef9f3;   /* Lighter cream - Sidebar background */
     --color-bg-hover: #fef1e6;     /* Light peach - Hover background */

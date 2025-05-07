@@ -1,1 +1,216 @@
-<p>application-detail works!</p>
+<div class="bg-white min-h-screen p-6">
+  <div class="max-w-6xl mx-auto">
+    <!-- Header with back button -->
+    <div class="mb-6 flex items-center">
+      <button (click)="onBack()" class="flex items-center text-[var(--color-text)] hover:text-[var(--color-secondary)] transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+        </svg>
+        Back to Applications
+      </button>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="flex justify-center py-12">
+      <app-loading-spinner></app-loading-spinner>
+    </div>
+
+    <!-- Error Message -->
+    <div *ngIf="errorMessage" class="bg-red-50 border border-red-200 rounded-md p-4 mb-6">
+      <p class="text-red-700">{{errorMessage}}</p>
+    </div>
+
+    <!-- Application Details -->
+    <div *ngIf="!isLoading && application" class="space-y-6">
+      <!-- Main Header Section -->
+      <div class="bg-white rounded-lg shadow-sm border border-[var(--color-border)] overflow-hidden">
+        <div class="p-6">
+          <div class="flex justify-between items-start mb-4">
+            <div>
+              <h2 class="text-2xl font-bold text-[var(--color-text)] mb-2">{{ application.title }}</h2>
+              <div class="flex items-center gap-4 text-[var(--color-category)]">
+                <span class="flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 01-1.581.814l-4.419-2.946-4.419 2.946A1 1 0 014 16V4z" clip-rule="evenodd" />
+                  </svg>
+                  {{ application.company?.name }}
+                </span>
+                <span class="flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+                  </svg>
+                  {{application.remote ? 'Remote' : (application.location || 'Not specified')}}
+                </span>
+              </div>
+            </div>
+            <div class="flex gap-2">
+              <button (click)="onEdit()" 
+                      class="flex items-center gap-1 px-4 py-2 bg-[var(--color-secondary)] text-white rounded-md hover:bg-[var(--color-primary)] transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                </svg>
+                Edit
+              </button>
+              <button (click)="onDelete()" 
+                      class="flex items-center gap-1 px-4 py-2 bg-red-50 text-red-600 rounded-md hover:bg-red-100 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                </svg>
+                Delete
+              </button>
+            </div>
+          </div>
+
+          <!-- Status and Key Info -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 p-4 bg-[var(--color-bg-sidebar)] rounded-lg">
+            <div class="flex items-center gap-3">
+              <div class="flex-shrink-0 h-10 w-10 rounded-full bg-[var(--color-bg-active)] flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[var(--color-secondary)]" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>
+              </div>
+              <div>
+                <p class="text-sm text-gray-500">Status</p>
+                <div class="flex items-center gap-2">
+                  <span class="h-2 w-2 rounded-full" [ngStyle]="{'background-color': application.status?.color}"></span>
+                  <span class="text-[var(--color-text)] font-medium">{{application.status?.name}}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <div class="flex-shrink-0 h-10 w-10 rounded-full bg-[var(--color-bg-active)] flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[var(--color-secondary)]" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
+                </svg>
+              </div>
+              <div>
+                <p class="text-sm text-gray-500">Applied On</p>
+                <p class="text-[var(--color-text)] font-medium">{{application.application_date | date}}</p>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <div class="flex-shrink-0 h-10 w-10 rounded-full bg-[var(--color-bg-active)] flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[var(--color-secondary)]" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+                </svg>
+              </div>
+              <div>
+                <p class="text-sm text-gray-500">Salary Range</p>
+                <p class="text-[var(--color-text)] font-medium">
+                  {{application.salary_min | currency}} - {{application.salary_max | currency}}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Content Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Left Column -->
+        <div class="lg:col-span-2 space-y-6">
+          <!-- Job Description -->
+          <div class="bg-white rounded-lg shadow-sm border border-[var(--color-border)] overflow-hidden">
+            <div class="bg-[var(--color-bg-sidebar)] p-4 border-b border-[var(--color-border)]">
+              <h3 class="font-semibold text-[var(--color-text)]">Job Description</h3>
+            </div>
+            <div class="p-6">
+              <div class="prose max-w-none">
+                <p class="text-[var(--color-text)] whitespace-pre-wrap">{{application.description || 'No description provided'}}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Notes -->
+          <div class="bg-white rounded-lg shadow-sm border border-[var(--color-border)] overflow-hidden">
+            <div class="bg-[var(--color-bg-sidebar)] p-4 border-b border-[var(--color-border)]">
+              <h3 class="font-semibold text-[var(--color-text)]">Notes</h3>
+            </div>
+            <div class="p-6">
+              <div class="prose max-w-none">
+                <p class="text-[var(--color-text)] whitespace-pre-wrap">{{application.notes || 'No notes added'}}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column -->
+        <div class="space-y-6">
+          <!-- Additional Details -->
+          <div class="bg-white rounded-lg shadow-sm border border-[var(--color-border)] overflow-hidden">
+            <div class="bg-[var(--color-bg-sidebar)] p-4 border-b border-[var(--color-border)]">
+              <h3 class="font-semibold text-[var(--color-text)]">Additional Details</h3>
+            </div>
+            <div class="p-4 space-y-4">
+              <div class="flex items-center gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[var(--color-secondary)]" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clip-rule="evenodd" />
+                  <path d="M2 13.692V16a2 2 0 002 2h12a2 2 0 002-2v-2.308A24.974 24.974 0 0110 15c-2.796 0-5.487-.46-8-1.308z" />
+                </svg>
+                <div>
+                  <p class="text-sm text-gray-500">Employment Type</p>
+                  <p class="text-[var(--color-text)]">{{getEmploymentTypeLabel(application.employment_type)}}</p>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[var(--color-secondary)]" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z" clip-rule="evenodd" />
+                </svg>
+                <div>
+                  <p class="text-sm text-gray-500">Job URL</p>
+                  <a *ngIf="application.job_url" [href]="application.job_url" target="_blank" 
+                     class="text-[var(--color-secondary)] hover:text-[var(--color-primary)] transition-colors">
+                    View Job Posting
+                  </a>
+                  <p *ngIf="!application.job_url" class="text-[var(--color-text)]">Not specified</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tasks Section -->
+          <div class="bg-white rounded-lg shadow-sm border border-[var(--color-border)] overflow-hidden">
+            <div class="bg-[var(--color-bg-sidebar)] p-4 border-b border-[var(--color-border)] flex justify-between items-center">
+              <h3 class="font-semibold text-[var(--color-text)]">Tasks</h3>
+              <button class="text-[var(--color-secondary)] hover:text-[var(--color-primary)] transition-colors text-sm">
+                + Add Task
+              </button>
+            </div>
+            
+            <div class="p-4">
+              <div *ngIf="application.tasks?.length === 0" class="text-center py-6 text-gray-500">
+                No tasks added yet
+              </div>
+
+              <div *ngIf="application.tasks?.length > 0" class="space-y-4">
+                <div *ngFor="let task of application.tasks" 
+                     class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                  <div>
+                    <h4 class="font-medium text-[var(--color-text)]">{{task.title}}</h4>
+                    <p class="text-sm text-gray-500">{{task.description}}</p>
+                  </div>
+                  <div class="flex items-center space-x-4">
+                    <div class="flex items-center gap-2">
+                      <span class="h-2 w-2 rounded-full" [ngStyle]="{'background-color': task.status === 'Completed' ? '#10B981' : task.status === 'In Progress' ? '#F59E0B' : '#6B7280'}"></span>
+                      <span class="text-sm text-[var(--color-text)]">{{task.status}}</span>
+                    </div>
+                    <span class="text-sm text-gray-500">{{task.due_date | date}}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Modal -->
+<app-add-application *ngIf="showEditModal" 
+                     [application]="application"
+                     (closeModal)="onEditModalClose($event)">
+</app-add-application>

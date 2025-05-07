@@ -1,0 +1,82 @@
+<!-- Manage Statuses Modal -->
+<div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+  <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+    <!-- Header -->
+    <div class="bg-[var(--color-bg-sidebar)] p-6 border-b border-[var(--color-border)]">
+      <div class="flex justify-between items-center">
+        <h2 class="text-2xl font-bold text-[var(--color-text)]">Manage Application Statuses</h2>
+        <button (click)="onCancel()" class="text-gray-500 hover:text-[var(--color-primary)] transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Status List -->
+    <div class="p-6">
+      <div class="mb-6">
+        <h3 class="text-lg font-medium text-[var(--color-text)] mb-4">Current Statuses</h3>
+        <div class="space-y-2">
+          <div *ngFor="let status of statuses" class="flex items-center justify-between p-3 bg-[var(--color-bg-sidebar)] rounded-md">
+            <div class="flex items-center gap-3">
+              <div class="w-4 h-4 rounded-full" [style.background-color]="status.color"></div>
+              <span class="text-[var(--color-text)]">{{status.name}}</span>
+            </div>
+            <button (click)="deleteStatus(status.id)" class="text-red-600 hover:text-red-800">
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Add New Status Form -->
+      <form [formGroup]="statusForm" (ngSubmit)="onSubmit()" class="space-y-4">
+        <div>
+          <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Status Name *</label>
+          <input type="text" 
+                 id="name" 
+                 formControlName="name" 
+                 class="w-full p-2 border border-[var(--color-border)] rounded-md focus:ring-2 focus:ring-[var(--color-secondary)] focus:border-transparent"
+                 [class.border-red-500]="statusForm.get('name')?.invalid && statusForm.get('name')?.touched">
+          <div *ngIf="statusForm.get('name')?.invalid && statusForm.get('name')?.touched" class="text-red-500 text-sm mt-1">
+            Status name is required
+          </div>
+        </div>
+
+        <div>
+          <label for="color" class="block text-sm font-medium text-gray-700 mb-1">Status Color *</label>
+          <div class="flex items-center gap-2">
+            <input type="color" 
+                   id="color" 
+                   formControlName="color" 
+                   (input)="onColorChange($event)"
+                   class="w-12 h-12 p-1 border border-[var(--color-border)] rounded-md">
+            <input type="text" 
+                   formControlName="color" 
+                   class="flex-1 p-2 border border-[var(--color-border)] rounded-md focus:ring-2 focus:ring-[var(--color-secondary)] focus:border-transparent"
+                   placeholder="#000000">
+          </div>
+          <div *ngIf="statusForm.get('color')?.invalid && statusForm.get('color')?.touched" class="text-red-500 text-sm mt-1">
+            Status color is required
+          </div>
+        </div>
+
+        <!-- Form actions -->
+        <div class="flex justify-end mt-6 gap-3">
+          <button type="button" 
+                  (click)="onCancel()" 
+                  class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md">
+            Cancel
+          </button>
+          <button type="submit" 
+                  [disabled]="statusForm.invalid || isLoading"
+                  class="px-4 py-2 bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white rounded-md disabled:opacity-50">
+            <span *ngIf="isLoading">Adding...</span>
+            <span *ngIf="!isLoading">Add Status</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div> 
