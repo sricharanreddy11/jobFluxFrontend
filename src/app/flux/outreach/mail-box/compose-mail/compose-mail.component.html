@@ -1,34 +1,106 @@
 <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="w-[600px] max-w-[90%] bg-white rounded-lg shadow-lg overflow-hidden">
-      <div class="flex justify-between items-center p-4 bg-[#fef9f3] border-b border-[#e0c9a6]">
-        <h3 class="m-0 text-lg text-[#4b4b4b]">Compose New Message</h3>
-        <button class="bg-transparent border-0 text-2xl text-gray-500 cursor-pointer" (click)="OnClose()">×</button>
-      </div>
-      <div class="p-5">
-        <form (submit)="$event.preventDefault(); sendMail(composeForm.value)" #composeForm="ngForm">
-          <div class="mb-4">
-            <label for="to" class="block mb-1 text-sm">To:</label>
-            <input type="email" id="to" name="to" ngModel required
-                   class="w-full p-2.5 border border-[#e0c9a6] rounded text-sm">
-          </div>
-          <div class="mb-4">
-            <label for="subject" class="block mb-1 text-sm">Subject:</label>
-            <input type="text" id="subject" name="subject" ngModel required
-                   class="w-full p-2.5 border border-[#e0c9a6] rounded text-sm">
-          </div>
-          <div class="mb-4">
-            <label for="message" class="block mb-1 text-sm">Message:</label>
-            <textarea id="message" name="message" rows="8" ngModel required
-                     class="w-full p-2.5 border border-[#e0c9a6] rounded text-sm resize-y"></textarea>
-          </div>
-          <div class="flex justify-end gap-2.5 mt-5">
+  <div class="w-[600px] max-w-[90%] bg-white rounded-lg shadow-lg overflow-hidden">
+    <div class="flex justify-between items-center p-4 bg-[#fef9f3] border-b border-[#e0c9a6]">
+      <h3 class="m-0 text-lg text-[#4b4b4b]">Compose New Message</h3>
+      <button class="bg-transparent border-0 text-2xl text-gray-500 cursor-pointer hover:text-gray-700" (click)="OnClose()">×</button>
+    </div>
+    <div class="p-5">
+      <form (submit)="$event.preventDefault(); prepareMail(composeForm.value)" #composeForm="ngForm">
+        <!-- To Field -->
+        <div class="mb-4">
+          <label for="to" class="block mb-1 text-sm font-medium text-gray-700">To: <span class="text-red-500">*</span></label>
+          <input type="email" 
+                 id="to" 
+                 name="recipients" 
+                 ngModel 
+                 required
+                 placeholder="recipient@example.com"
+                 class="w-full p-2.5 border border-[#e0c9a6] rounded text-sm focus:outline-none focus:ring-2 focus:ring-[#168aad] focus:border-transparent">
+        </div>
+
+        <!-- CC Field -->
+        <div class="mb-4">
+          <div class="flex items-center justify-between mb-1">
+            <label for="cc" class="text-sm font-medium text-gray-700">CC:</label>
             <button type="button" 
-                   class="py-2 px-4 bg-transparent border border-[#e0c9a6] rounded text-sm text-[#4b4b4b] cursor-pointer"
-                   (click)="OnClose()">Cancel</button>
-            <button type="submit" 
-                   class="py-2 px-4 bg-[#168aad] hover:bg-[#0e7490] text-white border-0 rounded text-sm font-medium cursor-pointer">Send</button>
+                    (click)="toggleCc()"
+                    class="text-xs text-[#168aad] hover:underline">
+                  {{ showCc ? 'Close CC' : 'Add CC' }}
+            </button>
           </div>
-        </form>
-      </div>
+          <input *ngIf="showCc"
+                 type="email" 
+                 id="cc" 
+                 name="cc" 
+                 ngModel
+                 placeholder="cc@example.com (optional)"
+                 class="w-full p-2.5 border border-[#e0c9a6] rounded text-sm focus:outline-none focus:ring-2 focus:ring-[#168aad] focus:border-transparent">
+        </div>
+
+        <!-- BCC Field -->
+        <div class="mb-4">
+          <div class="flex items-center justify-between mb-1">
+            <label for="bcc" class="text-sm font-medium text-gray-700">BCC:</label>
+            <button type="button" 
+                    (click)="toggleBcc()"
+                    class="text-xs text-[#168aad] hover:underline">
+                  {{ showBcc ? 'Close BCC' : 'Add BCC' }}
+                </button>
+          </div>
+          <input *ngIf="showBcc"
+                 type="email" 
+                 id="bcc" 
+                 name="bcc" 
+                 ngModel
+                 placeholder="bcc@example.com (optional)"
+                 class="w-full p-2.5 border border-[#e0c9a6] rounded text-sm focus:outline-none focus:ring-2 focus:ring-[#168aad] focus:border-transparent">
+        </div>
+
+        <!-- Subject Field -->
+        <div class="mb-4">
+          <label for="subject" class="block mb-1 text-sm font-medium text-gray-700">Subject: <span class="text-red-500">*</span></label>
+          <input type="text" 
+                 id="subject" 
+                 name="subject" 
+                 ngModel 
+                 required
+                 placeholder="Email Subject"
+                 class="w-full p-2.5 border border-[#e0c9a6] rounded text-sm focus:outline-none focus:ring-2 focus:ring-[#168aad] focus:border-transparent">
+        </div>
+
+        <!-- Message Field -->
+        <div class="mb-4">
+          <label for="message" class="block mb-1 text-sm font-medium text-gray-700">Message: <span class="text-red-500">*</span></label>
+          <textarea id="message" 
+                    name="message" 
+                    rows="8" 
+                    ngModel 
+                    required
+                    placeholder="Type your message here..."
+                    class="w-full p-2.5 border border-[#e0c9a6] rounded text-sm resize-y focus:outline-none focus:ring-2 focus:ring-[#168aad] focus:border-transparent"></textarea>
+        </div>
+
+        <!-- Form Validation Messages -->
+        <div *ngIf="composeForm.submitted && composeForm.invalid" class="mb-4 p-3 bg-red-50 border border-red-200 rounded text-sm text-red-600">
+          <p *ngIf="composeForm.controls['recipients']?.errors?.['required']">Please enter a recipient email address.</p>
+          <p *ngIf="composeForm.controls['recipients']?.errors?.['email']">Please enter a valid email address.</p>
+          <p *ngIf="composeForm.controls['subject']?.errors?.['required']">Please enter a subject.</p>
+          <p *ngIf="composeForm.controls['message']?.errors?.['required']">Please enter a message.</p>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex justify-between items-center mt-5">
+          <div class="flex gap-2.5">
+            <button type="button" 
+                    class="py-2 px-4 bg-transparent border border-[#e0c9a6] rounded text-sm text-[#4b4b4b] cursor-pointer hover:bg-gray-50 transition-colors"
+                    (click)="OnClose()">Cancel</button>
+            <button type="submit" 
+                    class="py-2 px-4 bg-[#168aad] hover:bg-[#0e7490] disabled:bg-gray-400 disabled:cursor-not-allowed text-white border-0 rounded text-sm font-medium cursor-pointer transition-colors flex items-center">
+              Send
+            </button>
+          </div>
+        </div>
+      </form>
     </div>
   </div>
+</div>

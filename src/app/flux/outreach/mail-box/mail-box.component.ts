@@ -96,9 +96,23 @@ export class MailBoxComponent {
     this.showComposeModal = !this.showComposeModal;
   }
   
-  sendMail(mailData: any) {
+  handleSendMail(mailData: any) {
     console.log('Sending mail:', mailData);
-    this.showComposeModal = false;
+    console.log('MailBoxData:', this.mailBoxData);
+    mailData.sender = this.mailBoxData?.email || '';
+    const provider = this.mailBoxData?.provider.name || '';
+    const params = { provider };
+    this.outreachService.sendMail(mailData, params).subscribe(
+      response => {
+        console.log('Mail sent successfully:', response);
+        this.showComposeModal = false;
+        this.loadMailIntegrations();
+      },
+      error => {
+        console.error('Error sending mail:', error);
+        this.showComposeModal = false;
+      }
+    );
   }
 
   checkMailboxConnection(): void {

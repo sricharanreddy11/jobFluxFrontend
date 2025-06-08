@@ -1,145 +1,218 @@
 @if(isLoading){
-    <div class="flex items-center justify-center min-h-screen">
-        <app-loading-spinner></app-loading-spinner>
-    </div>
-}
-@else if(isMailboxConnected){
+<div class="flex items-center justify-center min-h-screen">
+  <app-loading-spinner></app-loading-spinner>
+</div>
+} @else if(isMailboxConnected){
 <div class="flex flex-col h-screen bg-[#ffffff] text-[#4b4b4b]">
-    <header class="flex justify-between items-center p-4 bg-white border-b border-[#e0c9a6] shadow-sm" *ngIf="mailBoxData">
-        <!-- Left: Logo + User Info -->
-        <div class="flex items-center gap-3">
-          <!-- Provider Icon -->
-          <img
-            *ngIf="getProviderIcon(mailBoxData?.provider?.name)"
-            [src]="getProviderIcon(mailBoxData.provider.name)"
-            alt="Provider Logo"
-            class="h-7 w-7 object-contain"
-            title="{{ mailBoxData.provider.name }}"
-          />
-      
-          <!-- Name + Email -->
-          <div>
-            <h3 class="text-base font-semibold text-gray-800 leading-tight">
-              {{ mailBoxData.meta?.name || 'User' }}
-            </h3>
-            <p class="text-sm text-gray-500">{{ mailBoxData.email }}</p>
-          </div>
-        </div>
-      
-        <!-- Right: Disconnect -->
-        <div class="flex items-center gap-2 text-sm">
-          <button
-            (click)="disconnectMailbox()"
-            class="flex items-center gap-1 px-3 py-1.5 border border-red-200 bg-red-50 text-red-600 rounded-md hover:bg-red-100 transition-colors"
-            title="Disconnect mailbox"
-          >
-            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-            </svg>
-            <span>Disconnect</span>
-          </button>
-        </div>
-      </header>
-  
-    <div class="flex flex-1 overflow-hidden">
-      <!-- Sidebar with filters -->
-      <aside class="w-56 bg-[#ffffff] border-r border-[#e0c9a6] flex flex-col py-5">
-        <button 
-          class="mx-4 mb-5 py-2.5 px-4 bg-[#ff7f50] hover:bg-[#ff5714] text-white rounded-md text-sm font-medium flex items-center justify-center transition-colors"
-          (click)="toggleComposeModal()">
-          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-          </svg>
-          <span>Compose</span>
-        </button>
-  
-        <nav>
-          <ul class="list-none p-0 m-0">
-            <li *ngFor="let filter of mailFilters" 
-                [class.bg-[#eaf4f4]]="selectedFilter === filter.id"
-                [class.border-l-[3px]]="selectedFilter === filter.id"
-                [class.border-[#168aad]]="selectedFilter === filter.id"
-                [class.font-medium]="selectedFilter === filter.id"
-                class="flex items-center py-2.5 px-5 cursor-pointer hover:bg-[#fef1e6] transition-colors"
-                (click)="selectFilter(filter.id)">
-              <span class="mr-3 text-[#a87c55]">
-                <!-- Inbox icon -->
-                <svg *ngIf="filter.icon === 'inbox'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
-                </svg>
-                
-                <!-- Sent icon -->
-                <svg *ngIf="filter.icon === 'paper-plane'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
-                </svg>
-                
-                <!-- Trash icon -->
-                <svg *ngIf="filter.icon === 'trash'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                </svg>
-              </span>
-              <span>{{ filter.name }}</span>
-            </li>
-          </ul>
-        </nav>
-      </aside>
-  
-      <!-- Main content area - Mail Thread Component -->
-    <main class="flex-1 overflow-auto p-5">
-       @if (selectedThreadId){
-        <app-mail-thread-detail 
-        [threadId]="selectedThreadId" 
-        (closeThread)="clearSelectedThread()">
-        </app-mail-thread-detail>
-    }
-    @else{
-        <app-mail-thread 
-        [filter]="selectedFilter" 
-        [thread_owner]="threadOwner" 
-        (selectedThreadId)="handleThreadSelected($event)">
-        </app-mail-thread>
-    }
-    </main>
-    </div>
-  
-    <!-- Compose Mail Modal -->
-    <app-compose-mail 
-      *ngIf="showComposeModal" 
-      (closeModal)="toggleComposeModal()"
-      >
-    </app-compose-mail>
-  </div>
-}
-@else{
-    <div class="min-h-screen text-[#4b4b4b]">
-        <div class="container mx-auto px-4 py-8">
-          <div class="max-w-3xl mx-auto">
-            <h1 class="text-2xl font-bold mb-6">Connect Your Email</h1>
-            
-            <div class="bg-white rounded-lg shadow-md p-6">
-              <p class="mb-6">Choose an email provider to connect to our outreach system:</p>
-              
-              <div class="grid gap-4 md:grid-cols-2">
-                <div *ngFor="let provider of providers" 
-                     class="border border-[#e0c9a6] rounded-lg p-4 hover:bg-[#fef1e6] cursor-pointer transition-colors"
-                     (click)="connectProvider(provider.id)">
-                  <div class="flex items-center mb-2">
-                    <img [src]="provider.icon" alt="{{ provider.name }}" class="w-8 h-8 mr-3">
-                    <h3 class="text-lg font-semibold">{{ provider.name }}</h3>
-                  </div>
-                  <p class="text-sm text-gray-600">{{ provider.description }}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Other Mail Form Modal -->
-        <app-other-mail-form 
-          *ngIf="showOtherMailModal" 
-          (formSubmit)="handleOtherMailSubmit($event)"
-          (formCancel)="closeOtherMailModal()">
-        </app-other-mail-form>
+  <header
+    class="flex justify-between items-center p-4 bg-white border-b border-[#e0c9a6] shadow-sm"
+    *ngIf="mailBoxData"
+  >
+    <!-- Left: Logo + User Info -->
+    <div class="flex items-center gap-3">
+      <!-- Provider Icon -->
+      <img
+        *ngIf="getProviderIcon(mailBoxData?.provider?.name)"
+        [src]="getProviderIcon(mailBoxData.provider.name)"
+        alt="Provider Logo"
+        class="h-7 w-7 object-contain"
+        title="{{ mailBoxData.provider.name }}"
+      />
+
+      <!-- Name + Email -->
+      <div>
+        <h3 class="text-base font-semibold text-gray-800 leading-tight">
+          {{ mailBoxData.meta?.name || "User" }}
+        </h3>
+        <p class="text-sm text-gray-500">{{ mailBoxData.email }}</p>
       </div>
+    </div>
+
+    <!-- Right: Disconnect -->
+    <div class="flex items-center gap-2 text-sm">
+      <button
+        (click)="disconnectMailbox()"
+        class="flex items-center gap-1 px-3 py-1.5 border border-red-200 bg-red-50 text-red-600 rounded-md hover:bg-red-100 transition-colors"
+        title="Disconnect mailbox"
+      >
+        <svg
+          class="h-4 w-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+          />
+        </svg>
+        <span>Disconnect</span>
+      </button>
+    </div>
+  </header>
+
+  <div class="flex flex-1 overflow-hidden">
+    <!-- Sidebar with filters -->
+    <aside
+      class="w-56 bg-[#ffffff] border-r border-[#e0c9a6] flex flex-col py-5"
+    >
+      <button
+        class="mx-4 mb-5 py-2.5 px-4 bg-[#ff7f50] hover:bg-[#ff5714] text-white rounded-md text-sm font-medium flex items-center justify-center transition-colors"
+        (click)="toggleComposeModal()"
+      >
+        <svg
+          class="w-4 h-4 mr-2"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 4v16m8-8H4"
+          ></path>
+        </svg>
+        <span>Compose</span>
+      </button>
+
+      <nav>
+        <ul class="list-none p-0 m-0">
+          <li
+            *ngFor="let filter of mailFilters"
+            [class.bg-[#eaf4f4]]="selectedFilter === filter.id"
+            [class.border-l-[3px]]="selectedFilter === filter.id"
+            [class.border-[#168aad]]="selectedFilter === filter.id"
+            [class.font-medium]="selectedFilter === filter.id"
+            class="flex items-center py-2.5 px-5 cursor-pointer hover:bg-[#fef1e6] transition-colors"
+            (click)="selectFilter(filter.id)"
+          >
+            <span class="mr-3 text-[#a87c55]">
+              <!-- Inbox icon -->
+              <svg
+                *ngIf="filter.icon === 'inbox'"
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
+                ></path>
+              </svg>
+
+              <!-- Sent icon -->
+              <svg
+                *ngIf="filter.icon === 'paper-plane'"
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+                ></path>
+              </svg>
+
+              <!-- Trash icon -->
+              <svg
+                *ngIf="filter.icon === 'trash'"
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                ></path>
+              </svg>
+            </span>
+            <span>{{ filter.name }}</span>
+          </li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- Main content area - Mail Thread Component -->
+    <main class="flex-1 overflow-auto p-5">
+      @if (selectedThreadId){
+      <app-mail-thread-detail
+        [threadId]="selectedThreadId"
+        (closeThread)="clearSelectedThread()"
+      >
+      </app-mail-thread-detail>
+      } @else{
+      <app-mail-thread
+        [filter]="selectedFilter"
+        [thread_owner]="threadOwner"
+        (selectedThreadId)="handleThreadSelected($event)"
+      >
+      </app-mail-thread>
+      }
+    </main>
+  </div>
+
+  <!-- Compose Mail Modal -->
+  <app-compose-mail
+    *ngIf="showComposeModal"
+    (sendMail)="handleSendMail($event)"
+    (closeModal)="toggleComposeModal()"
+  >
+  </app-compose-mail>
+</div>
+} @else{
+<div class="min-h-screen text-[#4b4b4b]">
+  <div class="container mx-auto px-4 py-8">
+    <div class="max-w-3xl mx-auto">
+      <h1 class="text-2xl font-bold mb-6">Connect Your Email</h1>
+
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <p class="mb-6">
+          Choose an email provider to connect to our outreach system:
+        </p>
+
+        <div class="grid gap-4 md:grid-cols-2">
+          <div
+            *ngFor="let provider of providers"
+            class="border border-[#e0c9a6] rounded-lg p-4 hover:bg-[#fef1e6] cursor-pointer transition-colors"
+            (click)="connectProvider(provider.id)"
+          >
+            <div class="flex items-center mb-2">
+              <img
+                [src]="provider.icon"
+                alt="{{ provider.name }}"
+                class="w-8 h-8 mr-3"
+              />
+              <h3 class="text-lg font-semibold">{{ provider.name }}</h3>
+            </div>
+            <p class="text-sm text-gray-600">{{ provider.description }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Other Mail Form Modal -->
+  <app-other-mail-form
+    *ngIf="showOtherMailModal"
+    (formSubmit)="handleOtherMailSubmit($event)"
+    (formCancel)="closeOtherMailModal()"
+  >
+  </app-other-mail-form>
+</div>
 }

@@ -5,77 +5,114 @@ import { BehaviorSubject, Observable, of } from 'rxjs';
 import { environment } from '../../../environments/environment.development';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class OutreachService {
   private apiUrl = environment.apiUrl;
   public mailBoxData = {};
-  
+
   constructor(private http: HttpClient) {}
-  
+
   getMailToken(paramsObj?: { [key: string]: any }): Observable<any> {
     let params = new HttpParams();
 
     if (paramsObj) {
-        Object.keys(paramsObj).forEach(key => {
-            params = params.set(key, paramsObj[key]);
-        });
+      Object.keys(paramsObj).forEach((key) => {
+        params = params.set(key, paramsObj[key]);
+      });
     }
     return this.http.get<any>(`${this.apiUrl}notification/token/`, { params });
   }
 
-  disconnectMailToken(data: any, paramsObj?: { [key: string]: any }): Observable<any> {
+  disconnectMailToken(
+    data: any,
+    paramsObj?: { [key: string]: any }
+  ): Observable<any> {
     let params = new HttpParams();
 
     if (paramsObj) {
-        Object.keys(paramsObj).forEach(key => {
-            params = params.set(key, paramsObj[key]);
-        });
+      Object.keys(paramsObj).forEach((key) => {
+        params = params.set(key, paramsObj[key]);
+      });
     }
-    return this.http.patch<any>(`${this.apiUrl}notification/token/disconnect/`,data, { params });
+    return this.http.patch<any>(
+      `${this.apiUrl}notification/token/disconnect/`,
+      data,
+      { params }
+    );
   }
-  
+
   getAuthorizeUrl(paramsObj?: { [key: string]: any }): Observable<any> {
     let params = new HttpParams();
 
     if (paramsObj) {
-        Object.keys(paramsObj).forEach(key => {
-            params = params.set(key, paramsObj[key]);
-        });
+      Object.keys(paramsObj).forEach((key) => {
+        params = params.set(key, paramsObj[key]);
+      });
     }
-    console.log("params", params);
-    return this.http.get<any>(`${this.apiUrl}notification/mail/authorize/`, {params});
+    console.log('params', params);
+    return this.http.get<any>(`${this.apiUrl}notification/mail/authorize/`, {
+      params,
+    });
   }
-  
-postAuthorizeMail(mailData: any, paramsObj?: { [key: string]: any }): Observable<any> {
+
+  postAuthorizeMail(
+    mailData: any,
+    paramsObj?: { [key: string]: any }
+  ): Observable<any> {
     let params = new HttpParams();
 
     if (paramsObj) {
-            Object.keys(paramsObj).forEach(key => {
-                    params = params.set(key, paramsObj[key]);
-            });
+      Object.keys(paramsObj).forEach((key) => {
+        params = params.set(key, paramsObj[key]);
+      });
     }
-    return this.http.post(`${this.apiUrl}notification/mail/authorize/`, mailData, { params });
-}
+    return this.http.post(
+      `${this.apiUrl}notification/mail/authorize/`,
+      mailData,
+      { params }
+    );
+  }
 
-    getMailThreads(paramsObj?: { [key: string]: any }): Observable<any[]> {
+  getMailThreads(paramsObj?: { [key: string]: any }): Observable<any[]> {
+    let params = new HttpParams();
+    if (paramsObj) {
+      Object.keys(paramsObj).forEach((key) => {
+        params = params.set(key, paramsObj[key]);
+      });
+    }
+    return this.http.get<any[]>(`${this.apiUrl}notification/mail-thread/`, {
+      params,
+    });
+  }
+
+    sendMail(
+        mailData: any,
+        paramsObj?: { [key: string]: any }
+    ): Observable<any> {
         let params = new HttpParams();
         if (paramsObj) {
-            Object.keys(paramsObj).forEach(key => {
+            Object.keys(paramsObj).forEach((key) => {
                 params = params.set(key, paramsObj[key]);
             });
         }
-        return this.http.get<any[]>(`${this.apiUrl}notification/mail-thread/`, { params });
-    }
-  
-    getMails(paramsObj?: { [key: string]: any }): Observable<any[]> {
-        let params = new HttpParams();
-        if (paramsObj) {
-            Object.keys(paramsObj).forEach(key => {
-                params = params.set(key, paramsObj[key]);
-            });
-        }
-        return this.http.get<any[]>(`${this.apiUrl}notification/mail-thread/detail/`, {params});
+        return this.http.post(
+            `${this.apiUrl}notification/email/send/message/`,
+            mailData,
+            { params }
+        );
     }
 
+  getMails(paramsObj?: { [key: string]: any }): Observable<any[]> {
+    let params = new HttpParams();
+    if (paramsObj) {
+      Object.keys(paramsObj).forEach((key) => {
+        params = params.set(key, paramsObj[key]);
+      });
+    }
+    return this.http.get<any[]>(
+      `${this.apiUrl}notification/mail-thread/detail/`,
+      { params }
+    );
+  }
 }
